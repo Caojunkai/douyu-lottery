@@ -3,9 +3,11 @@
         <div class="row">
             <div class="col-md-8 col-md-offset-2">
                 <div class="panel panel-default">
-                    <div class="panel-heading">Example Component</div>n
+                    <div class="panel-heading">Example Component ....</div>
                     <div class="panel-body">
                         I'm an example component!
+                        <h1>{{ myMessage }}</h1>
+                        <h2>{{ counter }}</h2>
                     </div>
                 </div>
             </div>
@@ -14,9 +16,17 @@
 </template>
 
 <script>
-    export default {
-        mounted() {
-            console.log(2333)
-        }
-    }
+  export default {
+    mounted() {
+      console.log(2333)
+    },
+    data: function () {
+      return {
+        counter: 0
+      }
+    },
+    props:[
+      'myMessage'
+    ]
+  }
 </script>

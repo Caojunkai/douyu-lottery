@@ -13,4 +13,5 @@
             </div>
         </div>
     </div>
+    <example :my-message="2333"></example>
 @endsection

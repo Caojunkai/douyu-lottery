@@ -9,18 +9,12 @@
 @import "../../../node_modules/bootstrap-sass/assets/stylesheets/bootstrap";
 
 body{
+  font-family: "Helvetica Neue",Helvetica,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","微软雅黑",Arial,sans-serif;
   height: auto;
-  //background: url("../images/57554bad7398d_1024.jpg") no-repeat;
-  background-size: cover;
+  background: rgb(10, 14, 69);
 }
 
-#app .navbar,#app .navbar .container {
-  background: rgb(53,54,68);
-}
-#app .navbar a{
-  color: white;
-  font-size: large;
-}
+
 
 
 

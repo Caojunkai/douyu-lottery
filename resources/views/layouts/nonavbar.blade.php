@@ -22,19 +22,6 @@
 </head>
 <body>
 <div id="app">
-    <douyu-navbar
-            app-name="{{ config('app.name', 'Laravel') }}"
-            app-link="{{ url('/') }}"
-            lottery-name="抽奖"
-            lottery-link="{{ route('lottery.index') }}"
-            is-login="{{ (!Auth::guest()) }}"
-            @if( !Auth::guest() )
-            user-name="{{ Auth::user()->name }}"
-            logout-link="{{ route('logout') }}"
-            @endif
-            login-link="{{ route('login') }}"
-            register-link="{{ route('register') }}"
-    ></douyu-navbar>
     @yield('content')
 </div>
 <!-- Scripts -->

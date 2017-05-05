@@ -25,14 +25,15 @@ class LotteryController extends Controller
     }
 
     public function show($lottery, Request $request) {
-        $vote_list = DB::table('gifts')->select(DB::raw('*,COUNT(douyu_id) as total'))->where('vote_id', $lottery)->groupBy('douyu_id')->paginate();
+        $vote_list = DB::table('gifts')->select(DB::raw('*,COUNT(douyu_id) as total'))->get()->toJson();
         $vote_time = DB::table('gifts')->select(DB::raw('MAX(vote_time) as end,MIN(vote_time) as start'))->where('vote_id',$lottery)->first();
-        $luck = $this->is_draw($lottery);
-        if (!$luck) {
-            return view('douyu.show', ['vote_time' => $vote_time,'vote_list' => $vote_list,'vote_id' => $lottery]);
-        } else {
-            return view('douyu.luck', ['vote_time' => $vote_time,'vote_list' => $vote_list,'luck_user' => $luck]);
-        }
+//        $luck = $this->is_draw($lottery);
+//        if (!$luck) {
+//            return view('douyu.show', ['vote_time' => $vote_time,'vote_list' => $vote_list,'vote_id' => $lottery]);
+//        } else {
+//            return view('douyu.luck', ['vote_time' => $vote_time,'vote_list' => $vote_list,'luck_user' => $luck]);
+//        }
+        return response(['data' => $vote_list,'code' => 1]);
     }
 
     public function store($draw_condition = 255,Request $request) {

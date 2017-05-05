@@ -1,6 +1,6 @@
-@extends('layouts.app')
+@extends('layouts.nonavbar')
 
 @section('content')
     <douyu-lottery-banner></douyu-lottery-banner>
-    11111
+    <douyu-draw-lottery></douyu-draw-lottery>
 @endsection

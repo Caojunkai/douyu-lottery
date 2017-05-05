@@ -9,9 +9,6 @@
 </template>
 
 <style scoped>
-    .el-row{
-        margin-top: -22px;
-    }
     .grid-content img{
         width:100%;
         height:auto;

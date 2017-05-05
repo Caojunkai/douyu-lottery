@@ -8,6 +8,7 @@
                         I'm an example component!
                         <h1>{{ myMessage }}</h1>
                         <h2>{{ counter }}</h2>
+                        <button class="btn" @click="test"></button>
                     </div>
                 </div>
             </div>
@@ -27,6 +28,13 @@
     },
     props:[
       'myMessage'
-    ]
+    ],
+    methods :{
+        test:function () {
+          axios.get('/home').then(function (response) {
+                console.log(response);
+          })
+        }
+    }
   }
 </script>

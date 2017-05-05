@@ -7,3 +7,20 @@
 
 // Bootstrap
 @import "../../../node_modules/bootstrap-sass/assets/stylesheets/bootstrap";
+
+body{
+  height: auto;
+  //background: url("../images/57554bad7398d_1024.jpg") no-repeat;
+  background-size: cover;
+}
+
+#app .navbar,#app .navbar .container {
+  background: rgb(53,54,68);
+}
+#app .navbar a{
+  color: white;
+  font-size: large;
+}
+
+
+

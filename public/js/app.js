@@ -13601,7 +13601,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_axios___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3_axios__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_vue_axios__ = __webpack_require__(111);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_vue_axios___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_4_vue_axios__);
-
 /**
  * First we will load all of this project's JavaScript dependencies which
  * includes Vue and other libraries. It is a great starting point when
@@ -13620,9 +13619,19 @@ __WEBPACK_IMPORTED_MODULE_0_vue___default.a.use(__WEBPACK_IMPORTED_MODULE_4_vue_
 
 // window.Vue = Vue
 __WEBPACK_IMPORTED_MODULE_0_vue___default.a.axios.defaults.headers.common = {
-  'X-CSRF-TOKEN': window.Laravel.csrfToken,
-  'X-Requested-With': 'XMLHttpRequest'
+    'X-CSRF-TOKEN': window.Laravel.csrfToken,
+    'X-Requested-With': 'XMLHttpRequest'
 };
+
+//配置接口地址
+// Vue.axios.baseUrl = ''
+//拦截器
+__WEBPACK_IMPORTED_MODULE_0_vue___default.a.axios.interceptors.request.use(function (config) {
+    return config;
+}, function (error) {
+    return Promise.reject(error);
+});
+
 /**
  * Next, we will create a fresh Vue application instance and attach it to
  * the page. Then, you may begin adding components to this application
@@ -13635,7 +13644,7 @@ __WEBPACK_IMPORTED_MODULE_0_vue___default.a.component('DouyuNavbar', __webpack_r
 __WEBPACK_IMPORTED_MODULE_0_vue___default.a.component('DouyuDrawLottery', __webpack_require__(114));
 
 var app = new __WEBPACK_IMPORTED_MODULE_0_vue___default.a({
-  el: '#app'
+    el: '#app'
 });
 
 /***/ }),
@@ -16068,53 +16077,143 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-  'name': 'DouyuDrawLottery',
-  data: function data() {
-    return {
-      lotteryUsers: [],
-      clearResult: false,
-      loading: false,
-      lotteryResult: '',
-      scrollContent: null,
-      pageId: 1
-    };
-  },
+    'name': 'DouyuDrawLottery',
+    data: function data() {
+        return {
+            lotteryUsers: [],
+            clearResult: false,
+            loading: false,
+            loadingGifts: false,
+            lotteryResult: '',
+            scrollContent: null,
+            pageId: 1,
+            lotteryUsersLen: 0,
+            getDataKind: 0
+        };
+    },
 
-  methods: {
-    test: function test() {
-      this.lotteryUsers.push({ 'douyu_name': 'ssdds', 'vote_time': 'saasas' });
-      this.clearResult = true;
-      this.lotteryResult = '无效数据清理完成';
-    },
-    lottery: function lottery() {
-      this.clearResult = false;
-    },
-    getGifts: function getGifts() {
-      var _this = this;
-      this.axios.get('/lotteries/' + _this.voteId, { params: { page: _this.pageId } }).then(function (response) {
-        var resp = response.data;
-        if (resp.code) {
-          var res = JSON.parse(resp.msg);
-          _this.pageId = parseInt(res.current_page) + 1;
-          _this.lotteryUsers = _this.lotteryUsers.concat(res.data);
+    methods: {
+        lottery: function lottery() {
+            this.clearResult = false;
+        },
+        getGifts: function getGifts() {
+            var _this = this;
+            _this.loadingGifts = true;
+            this.axios.get('/lotteries/' + _this.voteId, {
+                params: {
+                    page: _this.pageId
+                }
+            }).then(function (response) {
+                var resp = response.data;
+                if (resp.code) {
+                    var res = JSON.parse(resp.msg);
+                    _this.pageId = parseInt(res.current_page) + 1;
+                    _this.lotteryUsers = _this.lotteryUsers.concat(res.data);
+                }
+                _this.loadingGifts = false;
+            });
+        },
+        getMoreGifts: function getMoreGifts() {
+            if (this.scrollContent.scrollTop + this.scrollContent.offsetHeight >= this.scrollContent.scrollHeight) {
+                if (this.getDataKind) {
+                    this.cleanData();
+                } else {
+                    this.getGifts();
+                }
+            }
+        },
+        cleanData: function cleanData() {
+            var _this = this;
+            if (!_this.getDataKind) {
+                _this.pageId = 1;
+            }
+            if (_this.pageId > 1) {
+                _this.loadingGifts = true;
+            } else {
+                _this.loading = true;
+            }
+            _this.getDataKind = 1;
+            _this.axios.get('/lotteries/gifts/' + _this.voteId, {
+                params: {
+                    page: _this.pageId
+                }
+            }).then(function (response) {
+                var resp = response.data;
+                if (resp.code) {
+                    var res = JSON.parse(resp.msg);
+                    if (_this.getDataKind == 0 && _this.getLotteryUsersLen) {
+                        _this.lotteryUsers = [];
+                    }
+                    _this.lotteryUsers = _this.lotteryUsers.concat(res);
+                    if (_this.pageId > 1) {
+                        _this.loadingGifts = false;
+                    } else {
+                        _this.loading = false;
+                        _this.clearResult = true;
+                        _this.lotteryResult = '无效数据清理完成';
+                    }
+                    _this.pageId++;
+                }
+            });
+        },
+        drawLuckier: function drawLuckier() {
+            var _this = this;
+            _this.loading = true;
+            _this.axios.post('/lottery/draw', {
+                lottery_vote_id: _this.voteId
+            }).then(function (response) {
+                if (response.code) {
+                    //TODO 中奖用户
+                    _this.loading = false;
+                }
+            });
         }
-      });
     },
-    getMore: function getMore() {
-      //        if (this.scrollContent.scrollTop >= this.scrollContent.scrollHeight){
-      console.log(this.scrollContent.scrollTop);
-      console.log(this.scrollContent.scrollHeight);
-      //        }
+    props: ["voteId"],
+    computed: {
+        getLotteryUsersLen: function getLotteryUsersLen() {
+            return this.lotteryUsers.length > 0;
+        }
+    },
+    mounted: function mounted() {
+        this.scrollContent = document.getElementById('lottery-content-left-content');
+        this.getGifts(1);
+        this.scrollContent.addEventListener('scroll', this.getMoreGifts);
     }
-  },
-  props: ["voteId"],
-  mounted: function mounted() {
-    this.scrollContent = document.getElementById('lottery-content-left-content');
-    this.getGifts(1);
-    this.scrollContent.addEventListener('scroll', this.getMore);
-  }
 });
 
 /***/ }),
@@ -18614,7 +18713,7 @@ exports.push([module.i, "@charset \"UTF-8\";.el-breadcrumb:after,.el-breadcrumb:
 /***/ (function(module, exports, __webpack_require__) {
 
 exports = module.exports = __webpack_require__(6)();
-exports.push([module.i, "\n.lottery-content[data-v-0804c39e]{\n     margin-top: 5px;\n     height:69%;\n}\n.el-col[data-v-0804c39e]{\n     background: rgb(84, 74, 144);\n}\n.lottery-content-left[data-v-0804c39e] {\n     min-height: 400px;\n     height: 100%;\n     padding: 2px;\n     margin-right: 2px;\n}\n.lottery-content-left-content[data-v-0804c39e]{\n     height: 100%;\n     border-radius: 10px;\n     background: rgb(54, 44, 81);\n     overflow: auto;\n}\n.lottery-content-left-content ul[data-v-0804c39e]{\n     padding-left: 0;\n}\n.lottery-content-left-content li[data-v-0804c39e]{\n     list-style: none;\n     color: white;\n     padding: 3px;\n     width:100%;\n     text-align: center;\n}\n.lottery-content-right[data-v-0804c39e]{\n     min-height: 400px;\n     height: 100%;\n     position: relative;\n}\n.lottery-content-right-button[data-v-0804c39e]{\n     position:absolute;\n     bottom: 20px;\n     width: 100%;\n     display: block;\n}\n.lottery-content-right-button-left[data-v-0804c39e]{\n     background: rgb(255, 228, 1);\n     color:rgb(54, 45, 81);\n     font-weight: 600;\n     border: none;\n     box-shadow: 0px 6px 2px rgb(198, 161, 32),0px 9px 25px rgba(0, 0, 0, .7);\n     transition: all .1s ease;\n     position: relative;\n}\n.lottery-content-right-button-left[data-v-0804c39e]:active{\n     box-shadow: 0px 3px 3px rgb(198, 161, 32),0px 3px 6px rgba(0, 0, 0, .9);\n     position: relative;\n     top: 6px;\n}\n.lottery-content-right-button-right[data-v-0804c39e]{\n     background: rgb(29, 234, 173);\n     color:rgb(54, 45, 81);\n     font-weight: 600;\n     border: none;\n     box-shadow: 0px 6px 2px rgb(20, 167, 156),0px 9px 25px rgba(0, 0, 0, .7);\n     transition: all .1s ease;\n     position: relative;\n}\n.lottery-content-right-button-right[data-v-0804c39e]:active{\n     box-shadow: 0px 2px 3px rgb(20, 167, 156),0px 3px 6px rgba(0, 0, 0, .9);\n     position: relative;\n     top: 6px;\n}\n.lottery-content-result[data-v-0804c39e]{\n}\n.lottery-content-result-clearup[data-v-0804c39e]{\n     border:rgb(255, 255, 255) solid 5px;\n     border-radius: 10px;\n     background:rgb(255, 241, 192);\n     margin-left:10%;\n     margin-right:10%;\n     margin-top:30%;\n     text-align: center;\n     color:rgb(86, 77, 141);\n}\n\n /*过渡效果\n =============================================================\n */\n.bounce-enter-active[data-v-0804c39e] {\n     -webkit-animation: bounce-in .5s;\n             animation: bounce-in .5s;\n}\n.bounce-leave-active[data-v-0804c39e] {\n     -webkit-animation: bounce-out .5s;\n             animation: bounce-out .5s;\n}\n@-webkit-keyframes bounce-in {\n0% {\n         -webkit-transform: scale(0);\n                 transform: scale(0);\n}\n50% {\n         -webkit-transform: scale(1.5);\n                 transform: scale(1.5);\n}\n100% {\n         -webkit-transform: scale(1);\n                 transform: scale(1);\n}\n}\n@keyframes bounce-in {\n0% {\n         -webkit-transform: scale(0);\n                 transform: scale(0);\n}\n50% {\n         -webkit-transform: scale(1.5);\n                 transform: scale(1.5);\n}\n100% {\n         -webkit-transform: scale(1);\n                 transform: scale(1);\n}\n}\n@-webkit-keyframes bounce-out {\n0% {\n         -webkit-transform: scale(1);\n                 transform: scale(1);\n}\n50% {\n         -webkit-transform: scale(1.5);\n                 transform: scale(1.5);\n}\n100% {\n         -webkit-transform: scale(0);\n                 transform: scale(0);\n}\n}\n@keyframes bounce-out {\n0% {\n         -webkit-transform: scale(1);\n                 transform: scale(1);\n}\n50% {\n         -webkit-transform: scale(1.5);\n                 transform: scale(1.5);\n}\n100% {\n         -webkit-transform: scale(0);\n                 transform: scale(0);\n}\n}\n /*============================================================*/\n[data-v-0804c39e]::-webkit-scrollbar {\n     width: 15px;\n    background: rgba(54, 44, 81,.2);\n}\n\n /* 滚动槽 */\n[data-v-0804c39e]::-webkit-scrollbar-track {\n     -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);\n     border-radius: 10px;\n     background-color: rgba(84, 74, 144,1);\n}\n\n /* 滚动条滑块 */\n[data-v-0804c39e]::-webkit-scrollbar-thumb {\n     height: 20p;\n     border-radius:20px;\n     background: rgb(67, 53, 106);\n     -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);\n}\n", ""]);
+exports.push([module.i, "\n.lottery-content[data-v-0804c39e] {\n    margin-top: 5px;\n    height: 69%;\n}\n.el-col[data-v-0804c39e] {\n    background: rgb(84, 74, 144);\n}\n.lottery-content-left[data-v-0804c39e] {\n    min-height: 400px;\n    height: 100%;\n    padding: 2px;\n    margin-right: 2px;\n}\n.lottery-content-left-content[data-v-0804c39e] {\n    height: 100%;\n    border-radius: 10px;\n    background: rgb(54, 44, 81);\n    overflow: auto;\n}\n.lottery-content-left-content ul[data-v-0804c39e] {\n    padding-left: 0;\n}\n.lottery-content-left-content li[data-v-0804c39e] {\n    list-style: none;\n    color: white;\n    padding: 3px;\n    width: 100%;\n    text-align: center;\n}\n.lottery-content-right[data-v-0804c39e] {\n    min-height: 400px;\n    height: 100%;\n    position: relative;\n}\n.lottery-content-right-button[data-v-0804c39e] {\n    position: absolute;\n    bottom: 20px;\n    width: 100%;\n    display: block;\n}\n.lottery-content-right-button-left[data-v-0804c39e] {\n    background: rgb(255, 228, 1);\n    color: rgb(54, 45, 81);\n    font-weight: 600;\n    border: none;\n    box-shadow: 0px 6px 2px rgb(198, 161, 32), 0px 9px 25px rgba(0, 0, 0, .7);\n    transition: all .1s ease;\n    position: relative;\n}\n.lottery-content-right-button-left[data-v-0804c39e]:active {\n    box-shadow: 0px 3px 3px rgb(198, 161, 32), 0px 3px 6px rgba(0, 0, 0, .9);\n    position: relative;\n    top: 6px;\n}\n.lottery-content-right-button-right[data-v-0804c39e] {\n    background: rgb(29, 234, 173);\n    color: rgb(54, 45, 81);\n    font-weight: 600;\n    border: none;\n    box-shadow: 0px 6px 2px rgb(20, 167, 156), 0px 9px 25px rgba(0, 0, 0, .7);\n    transition: all .1s ease;\n    position: relative;\n}\n.lottery-content-right-button-right[data-v-0804c39e]:active {\n    box-shadow: 0px 2px 3px rgb(20, 167, 156), 0px 3px 6px rgba(0, 0, 0, .9);\n    position: relative;\n    top: 6px;\n}\n.lottery-content-result[data-v-0804c39e] {\n}\n.lottery-content-result-clearup[data-v-0804c39e] {\n    border: rgb(255, 255, 255) solid 5px;\n    border-radius: 10px;\n    background: rgb(255, 241, 192);\n    margin-left: 10%;\n    margin-right: 10%;\n    margin-top: 30%;\n    text-align: center;\n    color: rgb(86, 77, 141);\n}\n\n\n\n\n/*过渡效果\n    =============================================================\n    */\n.bounce-enter-active[data-v-0804c39e] {\n    -webkit-animation: bounce-in .5s;\n            animation: bounce-in .5s;\n}\n.bounce-leave-active[data-v-0804c39e] {\n    -webkit-animation: bounce-out .5s;\n            animation: bounce-out .5s;\n}\n@-webkit-keyframes bounce-in {\n0% {\n        -webkit-transform: scale(0);\n                transform: scale(0);\n}\n50% {\n        -webkit-transform: scale(1.5);\n                transform: scale(1.5);\n}\n100% {\n        -webkit-transform: scale(1);\n                transform: scale(1);\n}\n}\n@keyframes bounce-in {\n0% {\n        -webkit-transform: scale(0);\n                transform: scale(0);\n}\n50% {\n        -webkit-transform: scale(1.5);\n                transform: scale(1.5);\n}\n100% {\n        -webkit-transform: scale(1);\n                transform: scale(1);\n}\n}\n@-webkit-keyframes bounce-out {\n0% {\n        -webkit-transform: scale(1);\n                transform: scale(1);\n}\n50% {\n        -webkit-transform: scale(1.5);\n                transform: scale(1.5);\n}\n100% {\n        -webkit-transform: scale(0);\n                transform: scale(0);\n}\n}\n@keyframes bounce-out {\n0% {\n        -webkit-transform: scale(1);\n                transform: scale(1);\n}\n50% {\n        -webkit-transform: scale(1.5);\n                transform: scale(1.5);\n}\n100% {\n        -webkit-transform: scale(0);\n                transform: scale(0);\n}\n}\n\n\n\n\n\n/*=========================滑动===================================*/\n[data-v-0804c39e]::-webkit-scrollbar {\n    width: 15px;\n    background: rgba(54, 44, 81, .2);\n}\n\n\n\n\n\n/* 滚动槽 */\n[data-v-0804c39e]::-webkit-scrollbar-track {\n    -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, .3);\n    border-radius: 10px;\n    background-color: rgba(84, 74, 144, 1);\n}\n\n\n\n\n\n/* 滚动条滑块 */\n[data-v-0804c39e]::-webkit-scrollbar-thumb {\n    height: 20p;\n    border-radius: 20px;\n    background: rgb(67, 53, 106);\n    -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, .3);\n}\n", ""]);
 
 /***/ }),
 /* 83 */
@@ -78549,10 +78648,17 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
   return _c('el-row', {
     staticClass: "lottery-content"
   }, [_c('el-col', {
+    directives: [{
+      name: "loading",
+      rawName: "v-loading",
+      value: (_vm.loadingGifts),
+      expression: "loadingGifts"
+    }],
     staticClass: "lottery-content-left",
     attrs: {
       "span": 6,
-      "offset": 4
+      "offset": 4,
+      "element-loading-text": "拼命加载中"
     }
   }, [_c('div', {
     staticClass: "grid-content lottery-content-left-content",
@@ -78560,16 +78666,13 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       "id": "lottery-content-left-content"
     }
   }, [_c('ul', _vm._l((_vm.lotteryUsers), function(lotteryUser) {
-    return _c('li', [_vm._v("\n                    " + _vm._s(lotteryUser.douyu_name) + "\n                    " + _vm._s(lotteryUser.vote_time) + "\n                ")])
+    return _c('li', [_vm._v("\n                    " + _vm._s(lotteryUser.douyu_name) + " " + _vm._s(lotteryUser.vote_time) + "\n                ")])
   }))])]), _vm._v(" "), _c('el-col', {
     directives: [{
       name: "loading",
-      rawName: "v-loading.fullscreen",
+      rawName: "v-loading",
       value: (_vm.loading),
-      expression: "loading",
-      modifiers: {
-        "fullscreen": true
-      }
+      expression: "loading"
     }],
     staticClass: "lottery-content-right",
     attrs: {
@@ -78606,7 +78709,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       "size": "large"
     },
     on: {
-      "click": _vm.test
+      "click": _vm.cleanData
     }
   }, [_vm._v("去除无用数据")])], 1), _vm._v(" "), _c('el-col', {
     attrs: {

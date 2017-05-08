@@ -1,4 +1,3 @@
-
 /**
  * First we will load all of this project's JavaScript dependencies which
  * includes Vue and other libraries. It is a great starting point when
@@ -17,9 +16,19 @@ Vue.use(VueAxios, axios);
 
 // window.Vue = Vue
 Vue.axios.defaults.headers.common = {
-  'X-CSRF-TOKEN': window.Laravel.csrfToken,
-  'X-Requested-With': 'XMLHttpRequest'
+    'X-CSRF-TOKEN': window.Laravel.csrfToken,
+    'X-Requested-With': 'XMLHttpRequest'
 };
+
+//配置接口地址
+// Vue.axios.baseUrl = ''
+//拦截器
+Vue.axios.interceptors.request.use(function(config) {
+    return config
+}, function(error) {
+    return Promise.reject(error)
+})
+
 /**
  * Next, we will create a fresh Vue application instance and attach it to
  * the page. Then, you may begin adding components to this application
@@ -27,9 +36,9 @@ Vue.axios.defaults.headers.common = {
  */
 
 Vue.component('example', require('./components/Example.vue'))
-Vue.component('DouyuLotteryBanner',require('./components/DouyuLotteryBanner.vue'))
-Vue.component('DouyuNavbar',require('./components/douyu/Navbar.vue'))
-Vue.component('DouyuDrawLottery',require('./components/douyu/DrawLottery.vue'))
+Vue.component('DouyuLotteryBanner', require('./components/DouyuLotteryBanner.vue'))
+Vue.component('DouyuNavbar', require('./components/douyu/Navbar.vue'))
+Vue.component('DouyuDrawLottery', require('./components/douyu/DrawLottery.vue'))
 
 const app = new Vue({
     el: '#app'

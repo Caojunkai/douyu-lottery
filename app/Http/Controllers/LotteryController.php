@@ -70,8 +70,20 @@ class LotteryController extends Controller
         return response(['msg' =>'抽取失败','code'=>0]);
     }
 
+//获取全部礼物记录
     public function getAllGifts($id){
         $gifts = DB::table('gifts')->where('vote_id','=',$id)->paginate(1000)->toJson();
         return response(['msg' => $gifts,'code' => 1]);
     }
+
+//获取筛选后的数据
+    public function getCleanGifts($id,Request $request){
+        $page = abs((int)$request->input('page'));
+        if(!$page){
+            $page = 1;
+        }
+        $gifts = DB::select("SELECT x.id,x.douyu_name,x.vote_time FROM (SELECT `id`,`vote_time`,`douyu_name`,@num := if(@group = `douyu_id`,@num + 1,1) AS row_number,@group := `douyu_id` AS douyu_id	FROM (SELECT `id`,`douyu_id`,`douyu_name`,`vote_time`,`vote_id` FROM gifts ORDER BY `douyu_id`) AS a WHERE `vote_id` = :vote_id) AS x WHERE x.row_number <= :rule LIMIT :offset,:rows", [':vote_id' => $id, ':rule' => 255, ':offset' => ($page - 1) * 1000, ':rows' => 1000]);
+        return response(['msg' => json_encode($gifts),'code' => 1]);
+    }
+
 }

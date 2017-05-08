@@ -16,16 +16,7 @@ class LotteryController extends Controller
         return view('douyu.lottery', ['vote_times' => $vote_time]);
     }
 
-    public function show($lottery, Request $request) {
-//        $vote_list = DB::table('gifts')->select(DB::raw('*,COUNT(douyu_id) as total'))->paginate();
-//        $vote_time = DB::table('gifts')->select(DB::raw('MAX(vote_time) as end,MIN(vote_time) as start'))->where('vote_id', $lottery)->first();
-//        $luck = $this->is_draw($lottery);
-//        if (!$luck) {
-//            return view('douyu.show', ['vote_time' => $vote_time, 'vote_list' => $vote_list, 'vote_id' => $lottery]);
-//        } else {
-//            return view('douyu.luck', ['vote_time' => $vote_time, 'vote_list' => $vote_list, 'luck_user' => $luck]);
-//        }
-//        return response(['data' => $vote_list,'code' => 1]);
+    public function show($lottery) {
         return view('douyu.draw',['vote_id' => $lottery]);
     }
 
@@ -80,7 +71,7 @@ class LotteryController extends Controller
     }
 
     public function getAllGifts($id){
-        $gifts = DB::table('gifts')->where('vote_id','=',$id)->paginate(1000);
-        var_dump($gifts);
+        $gifts = DB::table('gifts')->where('vote_id','=',$id)->paginate(1000)->toJson();
+        return response(['msg' => $gifts,'code' => 1]);
     }
 }

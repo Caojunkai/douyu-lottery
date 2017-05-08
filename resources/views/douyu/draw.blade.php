@@ -1,7 +1,7 @@
 @extends('layouts.app')
 @section('content')
     <douyu-lottery-banner></douyu-lottery-banner>
-    <douyu-draw-lottery vote-id="{{ $vote_id }}}"></douyu-draw-lottery>
+    <douyu-draw-lottery vote-id="{{ $vote_id }}"></douyu-draw-lottery>
 @endsection
 
 <style>

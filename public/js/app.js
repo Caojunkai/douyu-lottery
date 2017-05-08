@@ -16077,7 +16077,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
       clearResult: false,
       loading: false,
       lotteryResult: '',
-      scrollContent: null
+      scrollContent: null,
+      pageId: 1
     };
   },
 
@@ -16089,23 +16090,30 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     },
     lottery: function lottery() {
       this.clearResult = false;
-    }
-  },
-  watch: {
-    lotteryUsers: function lotteryUsers() {
-      this.scrollContent.scrollTop = this.scrollContent.scrollHeight;
+    },
+    getGifts: function getGifts() {
+      var _this = this;
+      this.axios.get('/lotteries/' + _this.voteId, { params: { page: _this.pageId } }).then(function (response) {
+        var resp = response.data;
+        if (resp.code) {
+          var res = JSON.parse(resp.msg);
+          _this.pageId = parseInt(res.current_page) + 1;
+          _this.lotteryUsers = _this.lotteryUsers.concat(res.data);
+        }
+      });
+    },
+    getMore: function getMore() {
+      //        if (this.scrollContent.scrollTop >= this.scrollContent.scrollHeight){
+      console.log(this.scrollContent.scrollTop);
+      console.log(this.scrollContent.scrollHeight);
+      //        }
     }
   },
   props: ["voteId"],
   mounted: function mounted() {
     this.scrollContent = document.getElementById('lottery-content-left-content');
-    var _this = this;
-    this.axios.get('/lottery/' + _this.vote_id).then(function (response) {
-      var res = response.data;
-      if (res.code) {
-        _this.lotteryUsers = JSON.parse(res.data);
-      }
-    });
+    this.getGifts(1);
+    this.scrollContent.addEventListener('scroll', this.getMore);
   }
 });
 
@@ -18606,7 +18614,7 @@ exports.push([module.i, "@charset \"UTF-8\";.el-breadcrumb:after,.el-breadcrumb:
 /***/ (function(module, exports, __webpack_require__) {
 
 exports = module.exports = __webpack_require__(6)();
-exports.push([module.i, "\n.lottery-content[data-v-0804c39e]{\n     margin-top: 5px;\n     height:65%;\n}\n.el-col[data-v-0804c39e]{\n     background: rgb(84, 74, 144);\n}\n.lottery-content-left[data-v-0804c39e] {\n     min-height: 500px;\n     height: 100%;\n     padding: 2px;\n     margin-right: 2px;\n}\n.lottery-content-left-content[data-v-0804c39e]{\n     height: 100%;\n     border-radius: 10px;\n     background: rgb(54, 44, 81);\n     overflow: auto;\n}\n.lottery-content-left-content ul[data-v-0804c39e]{\n     padding-left: 0;\n}\n.lottery-content-left-content li[data-v-0804c39e]{\n     list-style: none;\n     color: white;\n     padding: 3px;\n     width:100%;\n     text-align: center;\n}\n.lottery-content-right[data-v-0804c39e]{\n     min-height: 500px;\n     height: 100%;\n     position: relative;\n}\n.lottery-content-right-button[data-v-0804c39e]{\n     position:absolute;\n     bottom: 20px;\n     width: 100%;\n     display: block;\n}\n.lottery-content-right-button-left[data-v-0804c39e]{\n     background: rgb(255, 228, 1);\n     color:rgb(54, 45, 81);\n     font-weight: 600;\n     border: none;\n     box-shadow: 0px 6px 2px rgb(198, 161, 32),0px 9px 25px rgba(0, 0, 0, .7);\n     transition: all .1s ease;\n     position: relative;\n}\n.lottery-content-right-button-left[data-v-0804c39e]:active{\n     box-shadow: 0px 3px 3px rgb(198, 161, 32),0px 3px 6px rgba(0, 0, 0, .9);\n     position: relative;\n     top: 6px;\n}\n.lottery-content-right-button-right[data-v-0804c39e]{\n     background: rgb(29, 234, 173);\n     color:rgb(54, 45, 81);\n     font-weight: 600;\n     border: none;\n     box-shadow: 0px 6px 2px rgb(20, 167, 156),0px 9px 25px rgba(0, 0, 0, .7);\n     transition: all .1s ease;\n     position: relative;\n}\n.lottery-content-right-button-right[data-v-0804c39e]:active{\n     box-shadow: 0px 2px 3px rgb(20, 167, 156),0px 3px 6px rgba(0, 0, 0, .9);\n     position: relative;\n     top: 6px;\n}\n.lottery-content-result[data-v-0804c39e]{\n}\n.lottery-content-result-clearup[data-v-0804c39e]{\n     border:rgb(255, 255, 255) solid 5px;\n     border-radius: 10px;\n     background:rgb(255, 241, 192);\n     margin-left:10%;\n     margin-right:10%;\n     margin-top:30%;\n     text-align: center;\n     color:rgb(86, 77, 141);\n}\n\n /*过渡效果\n =============================================================\n */\n.bounce-enter-active[data-v-0804c39e] {\n     -webkit-animation: bounce-in .5s;\n             animation: bounce-in .5s;\n}\n.bounce-leave-active[data-v-0804c39e] {\n     -webkit-animation: bounce-out .5s;\n             animation: bounce-out .5s;\n}\n@-webkit-keyframes bounce-in {\n0% {\n         -webkit-transform: scale(0);\n                 transform: scale(0);\n}\n50% {\n         -webkit-transform: scale(1.5);\n                 transform: scale(1.5);\n}\n100% {\n         -webkit-transform: scale(1);\n                 transform: scale(1);\n}\n}\n@keyframes bounce-in {\n0% {\n         -webkit-transform: scale(0);\n                 transform: scale(0);\n}\n50% {\n         -webkit-transform: scale(1.5);\n                 transform: scale(1.5);\n}\n100% {\n         -webkit-transform: scale(1);\n                 transform: scale(1);\n}\n}\n@-webkit-keyframes bounce-out {\n0% {\n         -webkit-transform: scale(1);\n                 transform: scale(1);\n}\n50% {\n         -webkit-transform: scale(1.5);\n                 transform: scale(1.5);\n}\n100% {\n         -webkit-transform: scale(0);\n                 transform: scale(0);\n}\n}\n@keyframes bounce-out {\n0% {\n         -webkit-transform: scale(1);\n                 transform: scale(1);\n}\n50% {\n         -webkit-transform: scale(1.5);\n                 transform: scale(1.5);\n}\n100% {\n         -webkit-transform: scale(0);\n                 transform: scale(0);\n}\n}\n /*============================================================*/\n[data-v-0804c39e]::-webkit-scrollbar {\n     width: 15px;\n    background: rgba(54, 44, 81,.2);\n}\n\n /* 滚动槽 */\n[data-v-0804c39e]::-webkit-scrollbar-track {\n     -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);\n     border-radius: 10px;\n     background-color: rgba(84, 74, 144,1);\n}\n\n /* 滚动条滑块 */\n[data-v-0804c39e]::-webkit-scrollbar-thumb {\n     height: 20p;\n     border-radius:20px;\n     background: rgb(67, 53, 106);\n     -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);\n}\n", ""]);
+exports.push([module.i, "\n.lottery-content[data-v-0804c39e]{\n     margin-top: 5px;\n     height:69%;\n}\n.el-col[data-v-0804c39e]{\n     background: rgb(84, 74, 144);\n}\n.lottery-content-left[data-v-0804c39e] {\n     min-height: 400px;\n     height: 100%;\n     padding: 2px;\n     margin-right: 2px;\n}\n.lottery-content-left-content[data-v-0804c39e]{\n     height: 100%;\n     border-radius: 10px;\n     background: rgb(54, 44, 81);\n     overflow: auto;\n}\n.lottery-content-left-content ul[data-v-0804c39e]{\n     padding-left: 0;\n}\n.lottery-content-left-content li[data-v-0804c39e]{\n     list-style: none;\n     color: white;\n     padding: 3px;\n     width:100%;\n     text-align: center;\n}\n.lottery-content-right[data-v-0804c39e]{\n     min-height: 400px;\n     height: 100%;\n     position: relative;\n}\n.lottery-content-right-button[data-v-0804c39e]{\n     position:absolute;\n     bottom: 20px;\n     width: 100%;\n     display: block;\n}\n.lottery-content-right-button-left[data-v-0804c39e]{\n     background: rgb(255, 228, 1);\n     color:rgb(54, 45, 81);\n     font-weight: 600;\n     border: none;\n     box-shadow: 0px 6px 2px rgb(198, 161, 32),0px 9px 25px rgba(0, 0, 0, .7);\n     transition: all .1s ease;\n     position: relative;\n}\n.lottery-content-right-button-left[data-v-0804c39e]:active{\n     box-shadow: 0px 3px 3px rgb(198, 161, 32),0px 3px 6px rgba(0, 0, 0, .9);\n     position: relative;\n     top: 6px;\n}\n.lottery-content-right-button-right[data-v-0804c39e]{\n     background: rgb(29, 234, 173);\n     color:rgb(54, 45, 81);\n     font-weight: 600;\n     border: none;\n     box-shadow: 0px 6px 2px rgb(20, 167, 156),0px 9px 25px rgba(0, 0, 0, .7);\n     transition: all .1s ease;\n     position: relative;\n}\n.lottery-content-right-button-right[data-v-0804c39e]:active{\n     box-shadow: 0px 2px 3px rgb(20, 167, 156),0px 3px 6px rgba(0, 0, 0, .9);\n     position: relative;\n     top: 6px;\n}\n.lottery-content-result[data-v-0804c39e]{\n}\n.lottery-content-result-clearup[data-v-0804c39e]{\n     border:rgb(255, 255, 255) solid 5px;\n     border-radius: 10px;\n     background:rgb(255, 241, 192);\n     margin-left:10%;\n     margin-right:10%;\n     margin-top:30%;\n     text-align: center;\n     color:rgb(86, 77, 141);\n}\n\n /*过渡效果\n =============================================================\n */\n.bounce-enter-active[data-v-0804c39e] {\n     -webkit-animation: bounce-in .5s;\n             animation: bounce-in .5s;\n}\n.bounce-leave-active[data-v-0804c39e] {\n     -webkit-animation: bounce-out .5s;\n             animation: bounce-out .5s;\n}\n@-webkit-keyframes bounce-in {\n0% {\n         -webkit-transform: scale(0);\n                 transform: scale(0);\n}\n50% {\n         -webkit-transform: scale(1.5);\n                 transform: scale(1.5);\n}\n100% {\n         -webkit-transform: scale(1);\n                 transform: scale(1);\n}\n}\n@keyframes bounce-in {\n0% {\n         -webkit-transform: scale(0);\n                 transform: scale(0);\n}\n50% {\n         -webkit-transform: scale(1.5);\n                 transform: scale(1.5);\n}\n100% {\n         -webkit-transform: scale(1);\n                 transform: scale(1);\n}\n}\n@-webkit-keyframes bounce-out {\n0% {\n         -webkit-transform: scale(1);\n                 transform: scale(1);\n}\n50% {\n         -webkit-transform: scale(1.5);\n                 transform: scale(1.5);\n}\n100% {\n         -webkit-transform: scale(0);\n                 transform: scale(0);\n}\n}\n@keyframes bounce-out {\n0% {\n         -webkit-transform: scale(1);\n                 transform: scale(1);\n}\n50% {\n         -webkit-transform: scale(1.5);\n                 transform: scale(1.5);\n}\n100% {\n         -webkit-transform: scale(0);\n                 transform: scale(0);\n}\n}\n /*============================================================*/\n[data-v-0804c39e]::-webkit-scrollbar {\n     width: 15px;\n    background: rgba(54, 44, 81,.2);\n}\n\n /* 滚动槽 */\n[data-v-0804c39e]::-webkit-scrollbar-track {\n     -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);\n     border-radius: 10px;\n     background-color: rgba(84, 74, 144,1);\n}\n\n /* 滚动条滑块 */\n[data-v-0804c39e]::-webkit-scrollbar-thumb {\n     height: 20p;\n     border-radius:20px;\n     background: rgb(67, 53, 106);\n     -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);\n}\n", ""]);
 
 /***/ }),
 /* 83 */

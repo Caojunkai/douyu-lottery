@@ -38,13 +38,13 @@
 <style scoped>
     .lottery-content{
         margin-top: 5px;
-        height:65%;
+        height:69%;
     }
     .el-col{
         background: rgb(84, 74, 144);
     }
     .lottery-content-left {
-        min-height: 500px;
+        min-height: 400px;
         height: 100%;
         padding: 2px;
         margin-right: 2px;
@@ -66,7 +66,7 @@
         text-align: center;
     }
     .lottery-content-right{
-        min-height: 500px;
+        min-height: 400px;
         height: 100%;
         position: relative;
     }
@@ -186,6 +186,7 @@
         loading:false,
         lotteryResult:'',
         scrollContent:null,
+        pageId:1
       }
     },
     methods :{
@@ -196,11 +197,23 @@
       },
       lottery(){
         this.clearResult = false
-      }
-    },
-    watch: {
-      lotteryUsers(){
-            this.scrollContent.scrollTop = this.scrollContent.scrollHeight
+      },
+      getGifts(){
+        let _this = this;
+        this.axios.get('/lotteries/' + _this.voteId,{params:{page:_this.pageId}}).then(function (response) {
+          let resp = response.data
+          if (resp.code){
+            let res = JSON.parse(resp.msg)
+            _this.pageId = parseInt(res.current_page) + 1
+            _this.lotteryUsers = _this.lotteryUsers.concat(res.data)
+          }
+        })
+      },
+      getMore(){
+//        if (this.scrollContent.scrollTop >= this.scrollContent.scrollHeight){
+          console.log(this.scrollContent.scrollTop)
+          console.log(this.scrollContent.scrollHeight)
+//        }
       }
     },
     props:[
@@ -208,13 +221,8 @@
     ],
     mounted(){
       this.scrollContent = document.getElementById('lottery-content-left-content')
-      let _this = this;
-      this.axios.get('/lottery/' + _this.vote_id).then(function (response) {
-        let res = response.data;
-        if (res.code){
-          _this.lotteryUsers = JSON.parse(res.data);
-        }
-      })
+      this.getGifts(1)
+      this.scrollContent.addEventListener('scroll', this.getMore);
     }
   }
 </script>

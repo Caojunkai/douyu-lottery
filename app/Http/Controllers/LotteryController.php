@@ -12,79 +12,75 @@ class LotteryController extends Controller
     }
 
     public function index() {
-        $vote_time = DB::table('gifts')->select('vote_id', DB::raw('MAX(vote_time) as end_time'), DB::raw('MIN(vote_time) as start_time'))->groupBy('vote_id')->orderBy('start_time', 'desc')->paginate();
-        $is_luck_draw = DB::table('lucks')->pluck('vote_id')->toArray();
-        foreach ($vote_time->items() as $key => $value) {
-            if (in_array($value->vote_id, $is_luck_draw, true)) {
-                $vote_time->items()[$key]->is_draw = true;
-            } else {
-                $vote_time->items()[$key]->is_draw = false;
-            }
-        }
+        $vote_time = DB::table('gifts')->select('gifts.vote_id', DB::raw('MAX(gifts.vote_time) as end_time,MIN(gifts.vote_time) as start_time,lucks.douyu_id as douyu_id'))->leftJoin('lucks','gifts.vote_id','=','lucks.vote_id')->groupBy('gifts.vote_id')->orderBy('start_time', 'desc')->paginate();
         return view('douyu.lottery', ['vote_times' => $vote_time]);
     }
 
     public function show($lottery, Request $request) {
-        $vote_list = DB::table('gifts')->select(DB::raw('*,COUNT(douyu_id) as total'))->get()->toJson();
-        $vote_time = DB::table('gifts')->select(DB::raw('MAX(vote_time) as end,MIN(vote_time) as start'))->where('vote_id',$lottery)->first();
+//        $vote_list = DB::table('gifts')->select(DB::raw('*,COUNT(douyu_id) as total'))->paginate();
+//        $vote_time = DB::table('gifts')->select(DB::raw('MAX(vote_time) as end,MIN(vote_time) as start'))->where('vote_id', $lottery)->first();
 //        $luck = $this->is_draw($lottery);
 //        if (!$luck) {
-//            return view('douyu.show', ['vote_time' => $vote_time,'vote_list' => $vote_list,'vote_id' => $lottery]);
+//            return view('douyu.show', ['vote_time' => $vote_time, 'vote_list' => $vote_list, 'vote_id' => $lottery]);
 //        } else {
-//            return view('douyu.luck', ['vote_time' => $vote_time,'vote_list' => $vote_list,'luck_user' => $luck]);
+//            return view('douyu.luck', ['vote_time' => $vote_time, 'vote_list' => $vote_list, 'luck_user' => $luck]);
 //        }
-        return response(['data' => $vote_list,'code' => 1]);
+//        return response(['data' => $vote_list,'code' => 1]);
+        return view('douyu.draw',['vote_id' => $lottery]);
     }
 
-    public function store($draw_condition = 255,Request $request) {
+    public function store($draw_condition = 255, Request $request, $page = 1) {
+        $vote_id = $request->input('lottery_vote_id');
+        if ($request->exists('lottery_draw_rule') && $request->input('lottery_draw_rule') !== null) {
+            $draw_condition = $request->input('lottery_draw_rule');
+        }
+        //TODO 判断vote_id是否存在以及有效性
+
+//        $gifts = DB::select("SELECT x.id,x.uid,x.vote_time FROM (SELECT `id`,`vote_time`,@num := if(@group = `douyu_id`,@num + 1,1) AS row_number,@group := `douyu_id` AS uid	FROM (SELECT `id`,`douyu_id`,`douyu_name`,`vote_time`,`vote_id` FROM gifts ORDER BY `douyu_id`) AS a WHERE `vote_id` = :vote_id) AS x WHERE x.row_number <= :rule LIMIT :offset,:rows", [':vote_id' => $vote_id, ':rule' => 11000, ':offset' => ($page - 1) * 1000, ':rows' => 1000]);
+
+    }
+
+    public function is_draw($vote_id) {
+        $is_draw = DB::table('lucks')->where('vote_id', $vote_id)->first();
+        return $is_draw;
+    }
+
+    /**
+     * @param int                      $draw_condition
+     * @param \Illuminate\Http\Request $request
+     * @desc 抽奖函数
+     * @return \Illuminate\View\View|\Symfony\Component\HttpFoundation\Response
+     */
+
+    public function draw($draw_condition = 255, Request $request) {
         $vote_id = $request->input('lottery_vote_id');
         if ($request->exists('lottery_draw_rule') && $request->input('lottery_draw_rule') !== null){
             $draw_condition = $request->input('lottery_draw_rule');
         }
         //TODO 判断vote_id是否存在以及有效性
 
-
-        $gifts = DB::table('gifts')
-            ->where('vote_id', (int)$vote_id)
-            ->groupBy('douyu_id')
-            ->havingRaw('count(douyu_id) > ' . $draw_condition)
-            ->get();
-        if (!$gifts->count()){
-           return view('douyu.error');
-        }
-        $luck = [];
-        foreach ($gifts as $key => $value) {
-            array_push($luck, $value->douyu_id);
-        }
-        $result = DB::table('gifts')
-            ->where('vote_id', $vote_id)
-            ->whereIn('douyu_id', $luck)
-            ->get();
-        $arr_vote_time = [];
-        $arr_douyu_id = [];
-        $arr_douyu_name = [];
-        foreach ($result as $k => $v) {
-            array_push($arr_vote_time, (int)date('YmdHis', strtotime($v->vote_time)));
-            array_push($arr_douyu_id, (int)$v->douyu_id);
-            array_push($arr_douyu_name, $v->douyu_name);
-        }
-        $vote_time_result = array_reduce($arr_vote_time, function ($v1, $v2) {
-            return $v1 + $v2;
-        });
-        $douyu_id_result = array_reduce($arr_douyu_id, function ($v1, $v2) {
-            return $v1 + $v2;
-        });
-        $luckNum = ($vote_time_result + $douyu_id_result) % count($arr_douyu_id);
-        $result = DB::table('lucks')->insert(['douyu_id' =>$arr_douyu_id[$luckNum],'douyu_name' => $arr_douyu_name[$luckNum],'vote_id' => $vote_id,'created_at' => date('Y-m-d H:i:s',time()) ]);
-        if ($result){
-            return redirect("/lottery/$vote_id");
-        }else{
+        $gifts = DB::select("SELECT x.douyu_id,x.douyu_name,x.vote_time FROM (SELECT `id`,`vote_time`,`douyu_name`,@num := if(@group = `douyu_id`,@num + 1,1) AS row_number,@group := `douyu_id` AS douyu_id	 FROM (SELECT `id`,`douyu_id`,`douyu_name`,`vote_time`,`vote_id` FROM gifts ORDER BY `douyu_id`) AS a WHERE `vote_id` = :vote_id) AS x WHERE x.row_number <= :rule", [':vote_id' => $vote_id, ':rule' => $draw_condition]);
+        if (!count($gifts)) {
             return view('douyu.error');
         }
+        $vote_time_result = 0;
+        $vote_uid_result = 0;
+        foreach ($gifts as $k => $v){
+            $vote_time_result +=  (int)date('YmdHis', strtotime($v->vote_time));
+            $vote_uid_result += (int)$v->douyu_id;
+        }
+        $luckNum =( ($vote_time_result + $vote_uid_result) % count($gifts) + 1) % count($gifts);
+        $luckier = $gifts[$luckNum];
+        $luckier->vote_id = $vote_id;
+        $save_luckier = DB::table('lucks')->insert((array)$luckier);
+        if ($save_luckier){
+            return response(['msg'=>$luckier,'code'=>1]);
+        }
+        return response(['msg' =>'抽取失败','code'=>0]);
     }
 
-    public function is_draw($vote_id) {
-        $is_draw = DB::table('lucks')->where('vote_id', $vote_id)->first();
-        return $is_draw;
+    public function getAllGifts($id){
+        $gifts = DB::table('gifts')->where('vote_id','=',$id)->paginate(1000);
+        var_dump($gifts);
     }
 }

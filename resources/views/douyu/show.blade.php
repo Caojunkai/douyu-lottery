@@ -38,8 +38,9 @@
                         请输入抽奖规则
                     </h4>
                 </div>
-                <form action="{{ route('lottery.store') }}" method="post" role="form">
+                <form action="{{ route('lottery.draw') }}" method="post" role="form">
                     <div class="modal-body">
+                        {{ csrf_field() }}
                         <input type="hidden" name="lottery_vote_id" value="{{ $vote_id }}">
                         <input type="number" class="form-control" placeholder="输入获取抽奖资格所需礼物数 默认255" name="lottery_draw_rule">
                     </div>

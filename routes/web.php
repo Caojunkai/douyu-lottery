@@ -24,3 +24,5 @@ Route::post('/gifts','GiftController@insert');
 //Route::get('/lottery/{vid}','LotteryController@index')->name('lottery_get');
 //Route::post('/lottery','LotteryController@luck')->name('lottery_post');
 Route::resource('lottery','LotteryController');
+Route::post('/lottery/draw','LotteryController@draw')->name('lottery.draw');
+Route::get('/lotteries/{id}','LotteryController@getAllGifts')->name('lottery.getAll');

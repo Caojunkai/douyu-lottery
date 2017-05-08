@@ -1,9 +1,9 @@
 @extends('layouts.app')
-
 @section('content')
     <douyu-lottery-banner></douyu-lottery-banner>
-    <douyu-draw-lottery></douyu-draw-lottery>
+    <douyu-draw-lottery vote-id="{{ $vote_id }}}"></douyu-draw-lottery>
 @endsection
+
 <style>
     body{
         background: -webkit-linear-gradient(left, rgb(37, 24, 67) , rgb(9, 17, 71)); /* Safari 5.1 - 6.0 */
@@ -12,3 +12,4 @@
         background: linear-gradient(to right, rgb(37, 24, 67) , rgb(9, 17, 71)); /* 标准的语法 */
     }
 </style>
+

@@ -1,7 +1,7 @@
 <template>
     <el-row class="lottery-content">
         <el-col :span="6" :offset="4" class="lottery-content-left">
-            <div class="grid-content lottery-content-left-content">
+            <div class="grid-content lottery-content-left-content" id="lottery-content-left-content">
                 <ul>
                     <li v-for="lotteryUser in lotteryUsers">
                         {{ lotteryUser.douyu_name }}
@@ -10,18 +10,23 @@
                 </ul>
             </div>
         </el-col>
-        <el-col :span="10" class="lottery-content-right">
+        <el-col :span="10" class="lottery-content-right" v-loading.fullscreen="loading" element-loading-text="拼命加载中">
             <div class="block">
                 <div class="lottery-content-result">
+                    <transition name="bounce">
+                        <div class="lottery-content-result-clearup" v-show="clearResult">
+                            <h2>{{ lotteryResult }}</h2>
+                        </div>
+                    </transition>
 
                 </div>
                 <div class="lottery-content-right-button">
                     <el-row>
                         <el-col :span="4" :offset="6">
-                            <el-button type="warning" size="large" @click="test">去除无用数据</el-button>
+                            <el-button type="warning" size="large" @click="test" class="lottery-content-right-button-left">去除无用数据</el-button>
                         </el-col>
                         <el-col :span="4" :offset="4">
-                            <el-button type="info" size="large">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;开始抽奖&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</el-button>
+                            <el-button type="info" size="large" @click="lottery" class="lottery-content-right-button-right">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;开始抽奖&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</el-button>
                         </el-col>
                     </el-row>
                 </div>
@@ -33,52 +38,141 @@
 <style scoped>
     .lottery-content{
         margin-top: 5px;
+        height:65%;
     }
     .el-col{
         background: rgb(84, 74, 144);
     }
     .lottery-content-left {
-        height: 500px;
-        overflow: auto;
-        padding: 5px;
+        min-height: 500px;
+        height: 100%;
+        padding: 2px;
         margin-right: 2px;
     }
     .lottery-content-left-content{
-        min-height: 490px;
+        height: 100%;
         border-radius: 10px;
         background: rgb(54, 44, 81);
+        overflow: auto;
+    }
+    .lottery-content-left-content ul{
+        padding-left: 0;
     }
     .lottery-content-left-content li{
         list-style: none;
         color: white;
+        padding: 3px;
+        width:100%;
+        text-align: center;
     }
     .lottery-content-right{
-        height: 500px;
+        min-height: 500px;
+        height: 100%;
         position: relative;
     }
     .lottery-content-right-button{
         position:absolute;
         bottom: 20px;
         width: 100%;
+        display: block;
+    }
+    .lottery-content-right-button-left{
+        background: rgb(255, 228, 1);
+        color:rgb(54, 45, 81);
+        font-weight: 600;
+        border: none;
+        box-shadow: 0px 6px 2px rgb(198, 161, 32),0px 9px 25px rgba(0, 0, 0, .7);
+        -webkit-transition: all .1s ease;
+        -moz-transition: all .1s ease;
+        transition: all .1s ease;
+        position: relative;
+    }
+    .lottery-content-right-button-left:active{
+        box-shadow: 0px 3px 3px rgb(198, 161, 32),0px 3px 6px rgba(0, 0, 0, .9);
+        position: relative;
+        top: 6px;
+    }
+    .lottery-content-right-button-right{
+        background: rgb(29, 234, 173);
+        color:rgb(54, 45, 81);
+        font-weight: 600;
+        border: none;
+        box-shadow: 0px 6px 2px rgb(20, 167, 156),0px 9px 25px rgba(0, 0, 0, .7);
+        -webkit-transition: all .1s ease;
+        -moz-transition: all .1s ease;
+        transition: all .1s ease;
+        position: relative;
+    }
+    .lottery-content-right-button-right:active{
+        box-shadow: 0px 2px 3px rgb(20, 167, 156),0px 3px 6px rgba(0, 0, 0, .9);
+        position: relative;
+        top: 6px;
+    }
+    .lottery-content-result{
+
+    }
+    .lottery-content-result-clearup{
+        border:rgb(255, 255, 255) solid 5px;
+        border-radius: 10px;
+        background:rgb(255, 241, 192);
+        margin-left:10%;
+        margin-right:10%;
+        margin-top:30%;
+        text-align: center;
+        color:rgb(86, 77, 141);
     }
 
+    /*过渡效果
+    =============================================================
+    */
+    .bounce-enter-active {
+        animation: bounce-in .5s;
+    }
+    .bounce-leave-active {
+        animation: bounce-out .5s;
+    }
+    @keyframes bounce-in {
+        0% {
+            transform: scale(0);
+        }
+        50% {
+            transform: scale(1.5);
+        }
+        100% {
+            transform: scale(1);
+        }
+    }
+    @keyframes bounce-out {
+        0% {
+            transform: scale(1);
+        }
+        50% {
+            transform: scale(1.5);
+        }
+        100% {
+            transform: scale(0);
+        }
+    }
+    /*============================================================*/
+
    ::-webkit-scrollbar {
-        width: 12px;
+        width: 15px;
+       background: rgba(54, 44, 81,.2);
     }
 
     /* 滚动槽 */
     ::-webkit-scrollbar-track {
+        -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);
         border-radius: 10px;
+        background-color: rgba(84, 74, 144,1);
     }
 
     /* 滚动条滑块 */
-    .lottery-content-left::-webkit-scrollbar-thumb {
-        border-radius:15px;
-        background:rgb(67, 53, 106);
-    }
-
-    ::-webkit-scrollbar-thumb:window-inactive {
-        background: rgba(255, 0, 0, 0.4);
+    ::-webkit-scrollbar-thumb {
+        height: 20p;
+        border-radius:20px;
+        background: rgb(67, 53, 106);
+        -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);
     }
 </style>
 
@@ -87,17 +181,35 @@
     'name': 'DouyuDrawLottery',
     data() {
       return {
-        lotteryUsers:[]
+        lotteryUsers:[],
+        clearResult:false,
+        loading:false,
+        lotteryResult:'',
+        scrollContent:null,
       }
     },
     methods :{
       test:function () {
         this.lotteryUsers.push({'douyu_name':'ssdds','vote_time':'saasas'});
+        this.clearResult = true
+        this.lotteryResult = '无效数据清理完成'
+      },
+      lottery(){
+        this.clearResult = false
       }
     },
+    watch: {
+      lotteryUsers(){
+            this.scrollContent.scrollTop = this.scrollContent.scrollHeight
+      }
+    },
+    props:[
+      "voteId"
+    ],
     mounted(){
+      this.scrollContent = document.getElementById('lottery-content-left-content')
       let _this = this;
-      this.axios.get('/lottery/1').then(function (response) {
+      this.axios.get('/lottery/' + _this.vote_id).then(function (response) {
         let res = response.data;
         if (res.code){
           _this.lotteryUsers = JSON.parse(res.data);

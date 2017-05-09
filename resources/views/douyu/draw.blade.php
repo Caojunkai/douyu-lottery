@@ -12,4 +12,3 @@
         background: linear-gradient(to right, rgb(37, 24, 67) , rgb(9, 17, 71)); /* 标准的语法 */
     }
 </style>
-

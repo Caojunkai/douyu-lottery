@@ -1,8 +1,8 @@
 @extends('layouts.app')
 
 @section('content')
-    <douyu-lottery-banner></douyu-lottery-banner>
-    <douyu-draw-lottery></douyu-draw-lottery>
+
+
 @endsection
 <style>
     body{

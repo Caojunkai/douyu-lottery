@@ -14,12 +14,24 @@ class LotteryController extends Controller
 
     public function index()
     {
-        $vote_time = DB::table('gifts')->select('gifts.vote_id', DB::raw('MAX(gifts.vote_time) as end_time,MIN(gifts.vote_time) as start_time,lucks.douyu_id as douyu_id'))->leftJoin('lucks', 'gifts.vote_id', '=', 'lucks.vote_id')->groupBy('gifts.vote_id')->orderBy('start_time', 'desc')->paginate();
+        $vote_time = DB::table('gifts')->select('gifts.vote_id', DB::raw('MAX(gifts.vote_time) as end_time,MIN(gifts.vote_time) as start_time'))->groupBy('gifts.vote_id')->orderBy('start_time', 'desc')->paginate();
+        $luckier = DB::table('lucks')->pluck('vote_id')->toArray();
+        foreach ($vote_time->items() as $k => $v){
+            if (in_array($v->vote_id,$luckier)){
+                $v->douyu_id = 1;
+            }else{
+                $v->douyu_id = 0;
+            }
+        }
         return view('douyu.lottery', ['vote_times' => $vote_time]);
     }
 
     public function show($lottery)
     {
+        $luckier = DB::table('lucks')->where('vote_id','=',$lottery)->first();
+        if ($luckier){
+            return view('douyu.show',['vote_id' => $lottery,'luckier' => $luckier]);
+        }
         return view('douyu.draw', ['vote_id' => $lottery]);
     }
 
@@ -31,7 +43,6 @@ class LotteryController extends Controller
         }
         //TODO 判断vote_id是否存在以及有效性
 
-//        $gifts = DB::select("SELECT x.id,x.uid,x.vote_time FROM (SELECT `id`,`vote_time`,@num := if(@group = `douyu_id`,@num + 1,1) AS row_number,@group := `douyu_id` AS uid	FROM (SELECT `id`,`douyu_id`,`douyu_name`,`vote_time`,`vote_id` FROM gifts ORDER BY `douyu_id`) AS a WHERE `vote_id` = :vote_id) AS x WHERE x.row_number <= :rule LIMIT :offset,:rows", [':vote_id' => $vote_id, ':rule' => 11000, ':offset' => ($page - 1) * 1000, ':rows' => 1000]);
     }
 
     public function is_draw($vote_id)

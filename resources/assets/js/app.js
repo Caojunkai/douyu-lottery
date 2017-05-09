@@ -39,6 +39,7 @@ Vue.component('example', require('./components/Example.vue'))
 Vue.component('DouyuLotteryBanner', require('./components/DouyuLotteryBanner.vue'))
 Vue.component('DouyuNavbar', require('./components/douyu/Navbar.vue'))
 Vue.component('DouyuDrawLottery', require('./components/douyu/DrawLottery.vue'))
+Vue.component('DouyuDrawResult',require('./components/douyu/DrawResult.vue'))
 
 const app = new Vue({
     el: '#app'

@@ -3,18 +3,14 @@
         <el-col :span="6" :offset="4" class="lottery-content-left" v-loading="loadingGifts"
                 element-loading-text="拼命加载中">
             <div class="grid-content lottery-content-left-content" id="lottery-content-left-content">
-                <table>
-                    <tbody>
-                    <tr v-for="(lotteryUser,index) in lotteryUsers" style="width:100%;">
-                        <td style="width: 1%;vertical-align:middle;text-align:center;">{{index}}.</td>
-                        <td style="width:19%;">
-                            <img src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1494331517247&di=da53acca7260e0770a6424779497126b&imgtype=0&src=http%3A%2F%2Fpic2.orsoon.com%2F2016%2F1215%2F20161215100547239.jpg">
-                        </td>
-                        <td style="width:20%;vertical-align:middle;text-align:center;">{{ lotteryUser.douyu_name }}</td>
-                        <td style="width:60%;vertical-align:middle;text-align:center;">{{ lotteryUser.vote_time }}</td>
-                    </tr>
-                    </tbody>
-                </table>
+                <el-row v-for="(lotteryUser,index) in lotteryUsers" class="lottery-content-left-content-item">
+                    <el-col :span="2">{{index}}</el-col>
+                    <el-col :span="4">
+                        <img src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1494331517247&di=da53acca7260e0770a6424779497126b&imgtype=0&src=http%3A%2F%2Fpic2.orsoon.com%2F2016%2F1215%2F20161215100547239.jpg">
+                    </el-col>
+                    <el-col :span="6">{{ lotteryUser.douyu_name }}</el-col>
+                    <el-col :span="12">{{ lotteryUser.vote_time }}</el-col>
+                </el-row>
             </div>
         </el-col>
         <el-col :span="10" class="lottery-content-right" v-loading.fullscreen="loading" element-loading-text="拼命加载中">
@@ -94,22 +90,17 @@
         background: rgb(54, 44, 81);
         overflow: auto;
     }
-
-    .lottery-content-left-content table {
-        width: 100%;
-        color: rgba(255, 255, 255, .7);
-    }
-
-    .lottery-content-left-content table tr {
+    .lottery-content-left-content-item{
         height: 50px;
+        line-height: 50px;
+        text-align: center;
+        color: rgb(255,255,255);
     }
-
-    .lottery-content-left-content table img {
-        display: block;
-        height: 40px;
-        width: 40px;
+    .lottery-content-left-content-item img {
+        height: 30px;
+        width: 30px;
         border-radius: 100%;
-        margin-left: 10px;
+        margin-top: 10px;
     }
 
     .lottery-content-right {

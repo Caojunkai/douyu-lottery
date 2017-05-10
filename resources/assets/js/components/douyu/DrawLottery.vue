@@ -5,9 +5,10 @@
             <div class="grid-content lottery-content-left-content" id="lottery-content-left-content">
                 <table>
                     <tbody>
-                    <tr v-for="lotteryUser in lotteryUsers" style="width:100%;">
-                        <td style="width:20%;">
-                            <img src="https://ss2.baidu.com/6ONYsjip0QIZ8tyhnq/it/u=4138124942,3650530142&fm=80&w=179&h=119&img.JPEG">
+                    <tr v-for="(lotteryUser,index) in lotteryUsers" style="width:100%;">
+                        <td style="width: 1%;vertical-align:middle;text-align:center;">{{index}}.</td>
+                        <td style="width:19%;">
+                            <img src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1494331517247&di=da53acca7260e0770a6424779497126b&imgtype=0&src=http%3A%2F%2Fpic2.orsoon.com%2F2016%2F1215%2F20161215100547239.jpg">
                         </td>
                         <td style="width:20%;vertical-align:middle;text-align:center;">{{ lotteryUser.douyu_name }}</td>
                         <td style="width:60%;vertical-align:middle;text-align:center;">{{ lotteryUser.vote_time }}</td>
@@ -41,9 +42,18 @@
                 </div>
             </div>
         </el-col>
+        <!-- 中奖纪录查询 -->
         <el-col :span="2" class="lottery-content-result-btn">
             <el-button type="success" @click="getLotteryResult" icon="search" :disabled="!isLottery">中奖纪录</el-button>
         </el-col>
+        <!-- dialog -->
+        <el-dialog title="收货地址" :visible.sync="dialogTableVisible">
+            <el-table :data="gridData">
+                <el-table-column property="date" label="日期" width="150"></el-table-column>
+                <el-table-column property="name" label="姓名" width="200"></el-table-column>
+                <el-table-column property="address" label="地址"></el-table-column>
+            </el-table>
+        </el-dialog>
     </el-row>
 </template>
 
@@ -83,7 +93,7 @@
     }
 
     .lottery-content-left-content table tr {
-        height: 40px;
+        height: 50px;
     }
 
     .lottery-content-left-content table img {
@@ -162,8 +172,8 @@
     }
 
     /*过渡效果
-                =============================================================
-                */
+                    =============================================================
+                    */
 
     .bounce-enter-active {
         animation: bounce-in .5s;
@@ -240,7 +250,26 @@
         drawLuckierBtn: false,
         dialogVisible: false,
         luckier: null,
-        isLottery: false
+        isLottery: false,
+        hasData: true,
+        gridData: [{
+          date: '2016-05-02',
+          name: '王小虎',
+          address: '上海市普陀区金沙江路 1518 弄'
+        }, {
+          date: '2016-05-04',
+          name: '王小虎',
+          address: '上海市普陀区金沙江路 1518 弄'
+        }, {
+          date: '2016-05-01',
+          name: '王小虎',
+          address: '上海市普陀区金沙江路 1518 弄'
+        }, {
+          date: '2016-05-03',
+          name: '王小虎',
+          address: '上海市普陀区金沙江路 1518 弄'
+        }],
+        dialogTableVisible: false
       }
     },
     methods: {
@@ -257,19 +286,29 @@
         }).then(function (response) {
           let resp = response.data
           if (resp.code) {
-            let res = JSON.parse(resp.msg)
+            let res = resp.msg
             _this.pageId = parseInt(res.current_page) + 1
             _this.lotteryUsers = _this.lotteryUsers.concat(res.data)
+          } else {
+            _this.$message.warning('没有数据了')
+            _this.hasData = false
           }
           _this.loadingGifts = false
+        }).catch(function (response) {
+          _this.loadingGifts = false
+          _this.$message.warning('数据错误')
         })
       },
       getMoreGifts() {
         if (this.scrollContent.scrollTop + this.scrollContent.offsetHeight >= this.scrollContent.scrollHeight) {
-          if (this.getDataKind) {
-            this.cleanData()
-          } else {
-            this.getGifts()
+          if (this.hasData) {
+            if (this.getDataKind) {
+              this.cleanData()
+            } else {
+              this.getGifts()
+            }
+          }else {
+            this.$message.error('没有数据了')
           }
         }
       },
@@ -277,6 +316,7 @@
         let _this = this
         if (!_this.getDataKind) {
           _this.pageId = 1
+          _this.hasData = true
         }
         if (_this.pageId > 1) {
           _this.loadingGifts = true
@@ -290,22 +330,31 @@
         }).then(function (response) {
           let resp = response.data
           if (resp.code) {
-            let res = JSON.parse(resp.msg)
             if (_this.getLotteryUsersLen && !_this.getDataKind) {
               _this.lotteryUsers = []
             }
             _this.getDataKind = 1
-            _this.lotteryUsers = _this.lotteryUsers.concat(res)
+            _this.lotteryUsers = _this.lotteryUsers.concat(resp.msg)
             if (_this.pageId > 1) {
               _this.loadingGifts = false
             } else {
+              _this.scrollContent.scrollTop = 0
               _this.loading = false
               _this.clearResult = true
               _this.lotteryResult = '<h1>无效数据清理完成,请开始抽奖</h1>'
             }
             _this.pageId++
             _this.cleanDataBtn = true
+          }else {
+            _this.$message.warning('没有数据了')
+            _this.hasData = false
+            _this.loading = false
+            _this.loadingGifts = false
           }
+        }).catch(function (response) {
+          _this.$message.error('没有数据了')
+          _this.loading = false
+          _this.loadingGifts = false
         })
       },
       drawLuckier() {
@@ -326,16 +375,22 @@
               _this.loading = false
               _this.drawLuckierBtn = true
               _this.isLottery = true
+              console.log(res.msg.lucknum)
+            }else {
+              _this.$message.error('抽奖失败，请重试')
+              _this.loading = false
             }
+          }).catch(function (response) {
+            _this.$message.error('数据错误')
+            _this.loading = false
           })
         } else {
           _this.$message.error('请先清理数据')
         }
       },
-      getLotteryResult(){
-        this.$alert('获奖用户为:' + this.luckier, '抽奖完成', {
-          confirmButtonText: '确定'
-        });
+      getLotteryResult() {
+        _this = this
+        this.dialogTableVisible = true
       }
     },
     props: [

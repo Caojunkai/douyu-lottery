@@ -1,8 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-
-
+<example></example>
 @endsection
 <style>
     body{

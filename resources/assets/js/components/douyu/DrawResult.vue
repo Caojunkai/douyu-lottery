@@ -7,7 +7,7 @@
                     <tbody>
                     <tr v-for="lotteryUser in lotteryUsers" style="width:100%;">
                         <td style="width:20%;">
-                            <img src="https://ss2.baidu.com/6ONYsjip0QIZ8tyhnq/it/u=4138124942,3650530142&fm=80&w=179&h=119&img.JPEG">
+                            <img src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1494331517247&di=da53acca7260e0770a6424779497126b&imgtype=0&src=http%3A%2F%2Fpic2.orsoon.com%2F2016%2F1215%2F20161215100547239.jpg">
                         </td>
                         <td style="width:20%;vertical-align:middle;text-align:center;">{{ lotteryUser.douyu_name }}</td>
                         <td style="width:60%;vertical-align:middle;text-align:center;">{{ lotteryUser.vote_time }}</td>

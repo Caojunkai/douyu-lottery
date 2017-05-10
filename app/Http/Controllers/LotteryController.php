@@ -16,10 +16,10 @@ class LotteryController extends Controller
     {
         $vote_time = DB::table('gifts')->select('gifts.vote_id', DB::raw('MAX(gifts.vote_time) as end_time,MIN(gifts.vote_time) as start_time'))->groupBy('gifts.vote_id')->orderBy('start_time', 'desc')->paginate();
         $luckier = DB::table('lucks')->pluck('vote_id')->toArray();
-        foreach ($vote_time->items() as $k => $v){
-            if (in_array($v->vote_id,$luckier)){
+        foreach ($vote_time->items() as $k => $v) {
+            if (in_array($v->vote_id, $luckier)) {
                 $v->douyu_id = 1;
-            }else{
+            } else {
                 $v->douyu_id = 0;
             }
         }
@@ -28,9 +28,9 @@ class LotteryController extends Controller
 
     public function show($lottery)
     {
-        $luckier = DB::table('lucks')->where('vote_id','=',$lottery)->first();
-        if ($luckier){
-            return view('douyu.show',['vote_id' => $lottery,'luckier' => $luckier]);
+        $luckier = DB::table('lucks')->where('vote_id', '=', $lottery)->first();
+        if ($luckier) {
+            return view('douyu.show', ['vote_id' => $lottery,'luckier' => $luckier]);
         }
         return view('douyu.draw', ['vote_id' => $lottery]);
     }
@@ -42,7 +42,6 @@ class LotteryController extends Controller
             $draw_condition = $request->input('lottery_draw_rule');
         }
         //TODO 判断vote_id是否存在以及有效性
-
     }
 
     public function is_draw($vote_id)
@@ -66,7 +65,7 @@ class LotteryController extends Controller
         }
         //TODO 判断vote_id是否存在以及有效性
 
-        $gifts = DB::select("SELECT x.douyu_id,x.douyu_name,x.vote_time FROM (SELECT `id`,`vote_time`,`douyu_name`,@num := if(@group = `douyu_id`,@num + 1,1) AS row_number,@group := `douyu_id` AS douyu_id	 FROM (SELECT `id`,`douyu_id`,`douyu_name`,`vote_time`,`vote_id` FROM gifts ORDER BY `douyu_id`) AS a WHERE `vote_id` = :vote_id) AS x WHERE x.row_number <= :rule", [':vote_id' => $vote_id, ':rule' => $draw_condition]);
+        $gifts = DB::select("SELECT x.id,x.douyu_id,x.douyu_name,x.vote_time FROM (SELECT `id`,`vote_time`,`douyu_name`,@num := if(@group = `douyu_id`,@num + 1,1) AS row_number,@group := `douyu_id` AS douyu_id	 FROM (SELECT `id`,`douyu_id`,`douyu_name`,`vote_time`,`vote_id` FROM gifts WHERE `vote_id` = :vote_id ORDER BY `douyu_id`) AS a) AS x WHERE x.row_number <= :rule ORDER BY x.id", [':vote_id' => $vote_id, ':rule' => $draw_condition]);
         if (!count($gifts)) {
             return view('douyu.error');
         }
@@ -79,8 +78,11 @@ class LotteryController extends Controller
         $luckNum =(($vote_time_result + $vote_uid_result) % count($gifts) + 1) % count($gifts);
         $luckier = $gifts[$luckNum];
         $luckier->vote_id = $vote_id;
-        $save_luckier = DB::table('lucks')->insert((array)$luckier);
-        sleep(4);
+        $luckier = (array)$luckier;
+        unset($luckier['id']);
+        $save_luckier = DB::table('lucks')->insert($luckier);
+        $luckier['lucknum'] = $luckNum - 1;
+        sleep(3);
         if ($save_luckier) {
             return response(['msg'=>$luckier,'code'=>1]);
         }
@@ -90,7 +92,10 @@ class LotteryController extends Controller
 //获取全部礼物记录
     public function getAllGifts($id)
     {
-        $gifts = DB::table('gifts')->where('vote_id', '=', $id)->paginate(1000)->toJson();
+        $gifts = DB::table('gifts')->where('vote_id', '=', $id)->paginate(1000);
+        if ($gifts->isEmpty()){
+            return response()->json(['msg' => '没有数据了','code' => 0]);
+        }
         return response(['msg' => $gifts,'code' => 1]);
     }
 
@@ -101,7 +106,20 @@ class LotteryController extends Controller
         if (!$page) {
             $page = 1;
         }
-        $gifts = DB::select("SELECT x.id,x.douyu_name,x.vote_time FROM (SELECT `id`,`vote_time`,`douyu_name`,@num := if(@group = `douyu_id`,@num + 1,1) AS row_number,@group := `douyu_id` AS douyu_id	FROM (SELECT `id`,`douyu_id`,`douyu_name`,`vote_time`,`vote_id` FROM gifts ORDER BY `douyu_id`) AS a WHERE `vote_id` = :vote_id) AS x WHERE x.row_number <= :rule LIMIT :offset,:rows", [':vote_id' => $id, ':rule' => 255, ':offset' => ($page - 1) * 1000, ':rows' => 1000]);
-        return response(['msg' => json_encode($gifts),'code' => 1]);
+        $gifts = DB::select("SELECT x.id,x.douyu_name,x.vote_time FROM (SELECT `id`,`vote_time`,`douyu_name`,@num := if(@group = `douyu_id`,@num + 1,1) AS row_number,@group := `douyu_id` AS douyu_id FROM (SELECT `id`,`douyu_id`,`douyu_name`,`vote_time`,`vote_id` FROM gifts WHERE `vote_id` = :vote_id ORDER BY `douyu_id`) AS a) AS x WHERE x.row_number <= :rule ORDER BY x.id LIMIT :offset,:rows", [':vote_id' => $id, ':rule' => 255, ':offset' => ($page - 1) * 1000, ':rows' => 1000]);
+
+        if (count($gifts)){
+            return response()->json(['msg' => $gifts,'code' => 1]);
+        }
+        return response()->json(['msg' => '没有数据','code' => 0]);
+    }
+
+    //获取所用获奖用户
+    public function getAllLucky(){
+        $lucky = DB::table('lucks')->orderBy('created_at')->paginate();
+        if ($lucky->isEmpty()){
+            return response(['msg'=>'没有数据','code' => 0]);
+        }
+        return response(['msg' => $lucky,'code' => 1]);
     }
 }

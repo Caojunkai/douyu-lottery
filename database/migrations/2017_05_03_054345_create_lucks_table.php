@@ -19,6 +19,7 @@ class CreateLucksTable extends Migration
                 $table->string('douyu_name');
                 $table->integer('douyu_id',false,true);
                 $table->integer('vote_id',false,true);
+                $table->timestamp('vote_time');
                 $table->timestamp('created_at')->nullable();
             });
     }

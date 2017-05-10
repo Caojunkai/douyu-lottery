@@ -5,8 +5,9 @@
             <div class="grid-content lottery-content-left-content" id="lottery-content-left-content">
                 <table>
                     <tbody>
-                    <tr v-for="lotteryUser in lotteryUsers" style="width:100%;">
-                        <td style="width:20%;">
+                    <tr v-for="(lotteryUser,index) in lotteryUsers" style="width:100%;">
+                        <td style="width: 1%;vertical-align:middle;text-align:center;">{{index}}.</td>
+                        <td style="width:19%;">
                             <img src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1494331517247&di=da53acca7260e0770a6424779497126b&imgtype=0&src=http%3A%2F%2Fpic2.orsoon.com%2F2016%2F1215%2F20161215100547239.jpg">
                         </td>
                         <td style="width:20%;vertical-align:middle;text-align:center;">{{ lotteryUser.douyu_name }}</td>
@@ -59,7 +60,7 @@
     }
 
     .lottery-content-left-content table tr {
-        height: 40px;
+        height: 50px;
     }
 
     .lottery-content-left-content table img {
@@ -119,6 +120,7 @@
         loadingGifts: false,
         scrollContent: null,
         pageId: 1,
+        hasData:true
       }
     },
     methods: {
@@ -132,16 +134,26 @@
         }).then(function (response) {
           let resp = response.data
           if (resp.code) {
-            let res = JSON.parse(resp.msg)
+            let res = resp.msg
             _this.pageId = parseInt(res.current_page) + 1
             _this.lotteryUsers = _this.lotteryUsers.concat(res.data)
+          } else {
+            _this.$message.warning('没有数据了')
+            _this.hasData = false
           }
           _this.loadingGifts = false
+        }).catch(function (response) {
+          _this.loadingGifts = false
+          _this.$message.warning('数据错误')
         })
       },
       getMoreGifts() {
         if (this.scrollContent.scrollTop + this.scrollContent.offsetHeight >= this.scrollContent.scrollHeight) {
-          this.getGifts()
+          if (this.hasData) {
+              this.getGifts()
+          }else {
+            this.$message.error('没有数据了')
+          }
         }
       }
     },

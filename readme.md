@@ -13,8 +13,10 @@ Douyu lottery project
 
 ![haha](https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1494331517247&di=da53acca7260e0770a6424779497126b&imgtype=0&src=http%3A%2F%2Fpic2.orsoon.com%2F2016%2F1215%2F20161215100547239.jpg)
 
-##use
+## use
+
 composer install
+
 npm install
 
 ## License

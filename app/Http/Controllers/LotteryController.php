@@ -29,9 +29,9 @@ class LotteryController extends Controller
     public function show($lottery)
     {
         $luckier = DB::table('lucks')->where('vote_id', '=', $lottery)->first();
-        if ($luckier) {
-            return view('douyu.show', ['vote_id' => $lottery,'luckier' => $luckier]);
-        }
+//        if ($luckier) {
+//            return view('douyu.show', ['vote_id' => $lottery,'luckier' => $luckier]);
+//        }
         return view('douyu.draw', ['vote_id' => $lottery]);
     }
 
@@ -116,10 +116,10 @@ class LotteryController extends Controller
 
     //获取所用获奖用户
     public function getAllLucky(){
-        $lucky = DB::table('lucks')->orderBy('created_at')->paginate();
+        $lucky = DB::table('lucks')->orderBy('created_at')->paginate(10);
         if ($lucky->isEmpty()){
-            return response(['msg'=>'没有数据','code' => 0]);
+            return response()->json(['msg'=>'没有数据','code' => 0]);
         }
-        return response(['msg' => $lucky,'code' => 1]);
+        return response()->json(['msg' => $lucky,'code' => 1]);
     }
 }

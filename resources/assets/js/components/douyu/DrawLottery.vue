@@ -44,15 +44,23 @@
         </el-col>
         <!-- 中奖纪录查询 -->
         <el-col :span="2" class="lottery-content-result-btn">
-            <el-button type="success" @click="getLotteryResult" icon="search" :disabled="!isLottery">中奖纪录</el-button>
+            <el-button type="success" @click="getLotteryResult" icon="search">中奖纪录</el-button>
         </el-col>
         <!-- dialog -->
-        <el-dialog title="收货地址" :visible.sync="dialogTableVisible">
-            <el-table :data="gridData">
-                <el-table-column property="date" label="日期" width="150"></el-table-column>
-                <el-table-column property="name" label="姓名" width="200"></el-table-column>
-                <el-table-column property="address" label="地址"></el-table-column>
+        <el-dialog title="中奖纪录" :visible.sync="dialogTableVisible">
+            <el-table :data="DrawResultData" style="width: 100%">
+                <el-table-column property="douyu_name" label="姓名" width="300"></el-table-column>
+                <el-table-column property="created_at" label="日期" ></el-table-column>
             </el-table>
+            <div class="block">
+                <el-pagination
+                        @current-change="DrawResultCurrentChange"
+                        :current-page.sync="DrawResultCurrentPage"
+                        :page-size="10"
+                        layout="total, prev, pager, next"
+                        :total="DrawResultTotal">
+                </el-pagination>
+            </div>
         </el-dialog>
     </el-row>
 </template>
@@ -248,28 +256,12 @@
         getDataKind: 0,
         cleanDataBtn: false,
         drawLuckierBtn: false,
-        dialogVisible: false,
         luckier: null,
-        isLottery: false,
         hasData: true,
-        gridData: [{
-          date: '2016-05-02',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄'
-        }, {
-          date: '2016-05-04',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄'
-        }, {
-          date: '2016-05-01',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄'
-        }, {
-          date: '2016-05-03',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄'
-        }],
-        dialogTableVisible: false
+        DrawResultData: [],
+        dialogTableVisible: false,
+        DrawResultCurrentPage:1,
+        DrawResultTotal:0
       }
     },
     methods: {
@@ -374,7 +366,6 @@
               });
               _this.loading = false
               _this.drawLuckierBtn = true
-              _this.isLottery = true
               console.log(res.msg.lucknum)
             }else {
               _this.$message.error('抽奖失败，请重试')
@@ -389,8 +380,29 @@
         }
       },
       getLotteryResult() {
-        _this = this
-        this.dialogTableVisible = true
+        let _this = this
+        _this.dialogTableVisible = true
+        this.axios.get('/lotteries/lucky/all').then(function (response) {
+            let res = response.data
+            if (res.code){
+              _this.DrawResultData = res.msg.data
+              _this.DrawResultTotal = res.msg.total
+            }
+        })
+        //TODO
+      },
+      DrawResultCurrentChange(val){
+        let _this = this
+        _this.axios.get('/lotteries/lucky/all',{
+          params: {
+            page: val
+          }
+        }).then(function (response) {
+          let res = response.data
+          if (res.code){
+            _this.DrawResultData = res.msg.data
+          }
+        })
       }
     },
     props: [

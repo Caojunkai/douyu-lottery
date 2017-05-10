@@ -13,7 +13,7 @@
                                     <span style="color: rgb(199,37,78);">{{ $vote_time->start_time }}</span>
                                     ~  结束时间：
                                     <span style="color: rgb(199,37,78);">{{  $vote_time->end_time }}</span>
-                                    @if($vote_time->is_draw) <span class="text-danger">(已抽过)</span>
+                                    @if($vote_time->douyu_id) <span class="text-danger">(已抽过)</span>
                                     <a href=" {{ route('lottery.show',['lottery' => $vote_time->vote_id]) }} "
                                        class="btn btn-info pull-right" role="button">查看</a>
                                     @else

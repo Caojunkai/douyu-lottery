@@ -17,10 +17,14 @@ Route::get('/', function () {
 
 Auth::routes();
 
-Route::get('/home', 'HomeController@index')->name('home');
+Route::get('/home', 'LotteryController@index')->name('home');
 
 Route::post('/gifts','GiftController@insert');
 
 //Route::get('/lottery/{vid}','LotteryController@index')->name('lottery_get');
 //Route::post('/lottery','LotteryController@luck')->name('lottery_post');
 Route::resource('lottery','LotteryController');
+Route::post('/lottery/draw','LotteryController@draw')->name('lottery.draw');
+Route::get('/lotteries/{id}','LotteryController@getAllGifts')->name('lottery.getAll');
+Route::get('/lotteries/gifts/{id}','LotteryController@getCleanGifts')->name('lottery.getClean');
+Route::get('/lotteries/lucky/{id}','LotteryController@getAllLucky')->name('lottery.getAllLucky');

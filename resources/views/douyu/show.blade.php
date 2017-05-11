@@ -1,7 +1,7 @@
 @extends('layouts.app')
 @section('content')
 <douyu-lottery-banner></douyu-lottery-banner>
-<douyu-draw-result vote-id="{{ $vote_id }}" luckier="{{ $luckier->douyu_name }}"></douyu-draw-result>
+<douyu-draw-result vote-id="{{ $vote_id }}" lucknum="{{ $lucknum }}"></douyu-draw-result>
 @endsection
 
 <style>

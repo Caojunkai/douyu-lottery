@@ -29,9 +29,9 @@ class LotteryController extends Controller
     public function show($lottery)
     {
         $luckier = DB::table('lucks')->where('vote_id', '=', $lottery)->first();
-//        if ($luckier) {
-//            return view('douyu.show', ['vote_id' => $lottery,'luckier' => $luckier]);
-//        }
+       if ($luckier) {
+           return view('douyu.show', ['vote_id' => $lottery,'lucknum' => $luckier->lucknum]);
+       }
         return view('douyu.draw', ['vote_id' => $lottery]);
     }
 
@@ -78,11 +78,12 @@ class LotteryController extends Controller
         $luckNum =(($vote_time_result + $vote_uid_result) % count($gifts) + 1) % count($gifts);
         $luckier = $gifts[$luckNum];
         $luckier->vote_id = $vote_id;
+        $luckier->lucknum = $luckNum;
         $luckier = (array)$luckier;
         unset($luckier['id']);
         $save_luckier = DB::table('lucks')->insert($luckier);
         $luckier['lucknum'] = $luckNum;
-        sleep(3);
+        sleep(1);
         if ($save_luckier) {
             return response(['msg'=>$luckier,'code'=>1]);
         }

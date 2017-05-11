@@ -81,7 +81,7 @@ class LotteryController extends Controller
         $luckier = (array)$luckier;
         unset($luckier['id']);
         $save_luckier = DB::table('lucks')->insert($luckier);
-        $luckier['lucknum'] = $luckNum - 1;
+        $luckier['lucknum'] = $luckNum;
         sleep(3);
         if ($save_luckier) {
             return response(['msg'=>$luckier,'code'=>1]);
@@ -107,7 +107,9 @@ class LotteryController extends Controller
             $page = 1;
         }
         $gifts = DB::select("SELECT x.id,x.douyu_name,x.vote_time FROM (SELECT `id`,`vote_time`,`douyu_name`,@num := if(@group = `douyu_id`,@num + 1,1) AS row_number,@group := `douyu_id` AS douyu_id FROM (SELECT `id`,`douyu_id`,`douyu_name`,`vote_time`,`vote_id` FROM gifts WHERE `vote_id` = :vote_id ORDER BY `douyu_id`) AS a) AS x WHERE x.row_number <= :rule ORDER BY x.id LIMIT :offset,:rows", [':vote_id' => $id, ':rule' => 255, ':offset' => ($page - 1) * 1000, ':rows' => 1000]);
-
+        foreach ($gifts as $key => $value) {
+            $value->cid = ($page-1)*1000+(int)$key;
+        }
         if (count($gifts)){
             return response()->json(['msg' => $gifts,'code' => 1]);
         }

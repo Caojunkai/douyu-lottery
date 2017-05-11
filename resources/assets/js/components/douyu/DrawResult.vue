@@ -2,14 +2,24 @@
 <el-row class="lottery-content">
     <el-col :span="6" :offset="4" class="lottery-content-left" v-loading="loadingGifts" element-loading-text="拼命加载中">
         <div class="grid-content lottery-content-left-content" id="lottery-content-left-content">
-            <el-row class="lottery-content-left-content-item" v-for="lotteryUser in lotteryUsers" :key="lotteryUser.cid">
-                <el-col :span="2">{{lotteryUser.cid}}</el-col>
-                <el-col :span="4">
-                    <img src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1494331517247&di=da53acca7260e0770a6424779497126b&imgtype=0&src=http%3A%2F%2Fpic2.orsoon.com%2F2016%2F1215%2F20161215100547239.jpg">
-                </el-col>
-                <el-col :span="6">{{ lotteryUser.douyu_name }}</el-col>
-                <el-col :span="12">{{ lotteryUser.vote_time }}</el-col>
-            </el-row>
+            <div v-for="lotteryUser in lotteryUsers" :key="lotteryUser.cid" class="lottery-content-left-content-item">
+                <el-row v-if="lotteryUser.cid == lucknum" style="border:2px dashed red">
+                    <el-col :span="2">{{lotteryUser.cid}}</el-col>
+                    <el-col :span="4">
+                        <img src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1494331517247&di=da53acca7260e0770a6424779497126b&imgtype=0&src=http%3A%2F%2Fpic2.orsoon.com%2F2016%2F1215%2F20161215100547239.jpg">
+                    </el-col>
+                    <el-col :span="6">{{ lotteryUser.douyu_name }}</el-col>
+                    <el-col :span="12">{{ lotteryUser.vote_time }}</el-col>
+                </el-row>
+                <el-row v-else>
+                    <el-col :span="2">{{lotteryUser.cid}}</el-col>
+                    <el-col :span="4">
+                        <img src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1494331517247&di=da53acca7260e0770a6424779497126b&imgtype=0&src=http%3A%2F%2Fpic2.orsoon.com%2F2016%2F1215%2F20161215100547239.jpg">
+                    </el-col>
+                    <el-col :span="6">{{ lotteryUser.douyu_name }}</el-col>
+                    <el-col :span="12">{{ lotteryUser.vote_time }}</el-col>
+                </el-row>
+            </div>
         </div>
     </el-col>
     <el-col :span="10" class="lottery-content-right">
@@ -108,14 +118,13 @@
     margin-top: 60px;
 }
 
+
 /*=========================滑动===================================*/
 
  ::-webkit-scrollbar {
     width: 15px;
     background: rgba(54, 44, 81, .2);
 }
-
-
 
 
 /* 滚动槽 */
@@ -125,9 +134,6 @@
     border-radius: 10px;
     background-color: rgba(84, 74, 144, 1);
 }
-
-
-
 
 /* 滚动条滑块 */
 
@@ -151,8 +157,8 @@ export default {
             dialogTableVisible: false,
             DrawResultCurrentPage: 1,
             DrawResultTotal: 0,
-            DrawResultData:[],
-            luckier:''
+            DrawResultData: [],
+            luckier: ''
         }
     },
     methods: {
@@ -167,9 +173,9 @@ export default {
             }).then(function(response) {
                 let resp = response.data
                 if (resp.code) {
-                  _this.lotteryUsers = resp.msg
-                  let luckno = _this.lucknum%1000
-                  _this.luckier = resp.msg[luckno]
+                    _this.lotteryUsers = resp.msg
+                    let luckno = _this.lucknum % 1000
+                    _this.luckier = resp.msg[luckno]
                 } else {
                     _this.$message.error('数据错误')
                 }
@@ -189,7 +195,6 @@ export default {
                     _this.DrawResultTotal = res.msg.total
                 }
             })
-            //TODO
         },
         DrawResultCurrentChange(val) {
             let _this = this

@@ -2,14 +2,24 @@
 <el-row class="lottery-content">
     <el-col :span="6" :offset="4" class="lottery-content-left" v-loading="loadingGifts" element-loading-text="拼命加载中">
         <div class="grid-content lottery-content-left-content" id="lottery-content-left-content">
-            <el-row v-for="lotteryUser in lotteryUsers" :key="lotteryUser.cid" class="lottery-content-left-content-item">
-                <el-col :span="2">{{lotteryUser.cid}}</el-col>
-                <el-col :span="4">
-                    <img src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1494331517247&di=da53acca7260e0770a6424779497126b&imgtype=0&src=http%3A%2F%2Fpic2.orsoon.com%2F2016%2F1215%2F20161215100547239.jpg">
-                </el-col>
-                <el-col :span="6">{{ lotteryUser.douyu_name }}</el-col>
-                <el-col :span="12">{{ lotteryUser.vote_time }}</el-col>
-            </el-row>
+            <div v-for="lotteryUser in lotteryUsers" :key="lotteryUser.cid" class="lottery-content-left-content-item">
+                <el-row v-if="lotteryUser.cid === lucknum" style="border:2px dashed red">
+                    <el-col :span="2">{{lotteryUser.cid}}</el-col>
+                    <el-col :span="4">
+                        <img src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1494331517247&di=da53acca7260e0770a6424779497126b&imgtype=0&src=http%3A%2F%2Fpic2.orsoon.com%2F2016%2F1215%2F20161215100547239.jpg">
+                    </el-col>
+                    <el-col :span="6">{{ lotteryUser.douyu_name }}</el-col>
+                    <el-col :span="12">{{ lotteryUser.vote_time }}</el-col>
+                </el-row>
+                <el-row v-else>
+                    <el-col :span="2">{{lotteryUser.cid}}</el-col>
+                    <el-col :span="4">
+                        <img src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1494331517247&di=da53acca7260e0770a6424779497126b&imgtype=0&src=http%3A%2F%2Fpic2.orsoon.com%2F2016%2F1215%2F20161215100547239.jpg">
+                    </el-col>
+                    <el-col :span="6">{{ lotteryUser.douyu_name }}</el-col>
+                    <el-col :span="12">{{ lotteryUser.vote_time }}</el-col>
+                </el-row>
+            </div>
         </div>
     </el-col>
     <el-col :span="10" class="lottery-content-right" v-loading.fullscreen="loading" element-loading-text="拼命加载中">
@@ -252,7 +262,8 @@ export default {
             DrawResultData: [],
             dialogTableVisible: false,
             DrawResultCurrentPage: 1,
-            DrawResultTotal: 0
+            DrawResultTotal: 0,
+            lucknum:null
         }
     },
     methods: {
@@ -354,15 +365,17 @@ export default {
                         }).then(function(response) {
                             let resp = response.data
                             if (resp.code) {
+                                _this.lucknum = res.msg.lucknum
                                 _this.lotteryUsers = resp.msg
                                 _this.hasData = false
-                                let item = document.getElementsByClassName('lottery-content-left-content-item')[res.msg.lucknum%1000]
                                 _this.scrollContent.scrollTop = _this.scrollContent.scrollHeight*((res.msg.lucknum%1000)/1000 - 0.006)
-                                item.style.border="3px dashed red"
                             }
                         })
                         _this.lotteryResult = '<h1>计算结果：<span style="color:red;">'+ res.msg.lucknum +'</span></h1><h1>恭喜<span style="color:red;">' + res.msg.douyu_name + '</span>获奖</h1>'
                         _this.luckier = res.msg.douyu_name
+                        // _this.$alert('获奖用户为:' + _this.luckier, '抽奖完成', {
+                        //     confirmButtonText: '确定'
+                        // });
                         _this.loading = false
                         _this.drawLuckierBtn = true
                     } else {

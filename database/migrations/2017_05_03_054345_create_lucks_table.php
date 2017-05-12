@@ -20,6 +20,7 @@ class CreateLucksTable extends Migration
                 $table->integer('douyu_id',false,true);
                 $table->integer('vote_id',false,true);
                 $table->timestamp('vote_time');
+                $table->integer('lucknum',false,true);
                 $table->timestamp('created_at')->nullable();
             });
     }

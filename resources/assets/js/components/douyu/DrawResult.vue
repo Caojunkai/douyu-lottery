@@ -27,6 +27,7 @@
             <div class="lottery-content-result">
                 <transition name="bounce">
                     <div class="lottery-content-result-clearup">
+                        <h1>抽奖已结束</h1>
                         <h1>中奖序号为：<span style="color: red;">{{lucknum}}</span></h1>
                         <h1>获奖用户为：<span style="color: green">{{luckier.douyu_name}}</span></h1>
                     </div>

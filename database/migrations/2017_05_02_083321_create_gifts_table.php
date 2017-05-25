@@ -18,10 +18,12 @@ class CreateGiftsTable extends Migration
             $table->increments('id');
             $table->integer('vote_id', false, true);
             $table->string('douyu_name');
-            $table->integer('douyu_id', false, true);
+            //TODO douyu只传字符串 待加工
+//            $table->integer('douyu_id', false, true);
+            $table->string('douyu_id');
             $table->timestamp('vote_time');
             $table->tinyInteger('shark_fin');
-            $table->index(['vote_id','douyu_id']);
+            $table->index(['vote_id','douyu_id','vote_time']);
         });
     }
 

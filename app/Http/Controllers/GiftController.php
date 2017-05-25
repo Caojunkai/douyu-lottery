@@ -11,7 +11,7 @@ class GiftController extends Controller{
     }
     public function insert(Request $request){
         $rules = [
-            'data' => 'required|JSON'
+            'data' => 'required|json'
         ];
         $this->validate($request,$rules);
         $data = $request->input('data');
@@ -22,8 +22,8 @@ class GiftController extends Controller{
             });
         } catch (\Exception $e) {
             return response([
-                'msg' => 'error',
-                'code' => 200
+                'msg' => 'data error',
+                'code' => -1
             ]);
         }
         return response([
@@ -32,4 +32,3 @@ class GiftController extends Controller{
         ]);
     }
 }
-

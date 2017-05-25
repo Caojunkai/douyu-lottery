@@ -70,12 +70,10 @@ class LotteryController extends Controller
             return view('douyu.error');
         }
         $vote_time_result = 0;
-        $vote_uid_result = 0;
         foreach ($gifts as $k => $v) {
-            $vote_time_result +=  (int)date('YmdHis', strtotime($v->vote_time));
-            $vote_uid_result += (int)$v->douyu_id;
+            $vote_time_result +=  (int)date('mdHis', strtotime($v->vote_time));
         }
-        $luckNum =(($vote_time_result + $vote_uid_result) % count($gifts) + 1) % count($gifts);
+        $luckNum =($vote_time_result % count($gifts) + 1) % count($gifts);
         $luckier = $gifts[$luckNum];
         $luckier->vote_id = $vote_id;
         $luckier->lucknum = $luckNum;

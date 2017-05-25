@@ -22,7 +22,7 @@ class DouyuToken
             sort($tmpArr,SORT_STRING);
             $tmpStr = implode( $tmpArr );
             $tmpStr = sha1( $tmpStr );
-            if ($tmpArr == $params['signature']){
+            if ($tmpStr == $params['signature']){
                 return $next($request);
             }
         }

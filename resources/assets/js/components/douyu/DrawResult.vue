@@ -1,9 +1,9 @@
 <template>
 <el-row class="lottery-content">
-    <el-col :span="6" :offset="4" class="lottery-content-left" v-loading="loadingGifts" element-loading-text="拼命加载中">
+    <el-col :span="7" :offset="4" class="lottery-content-left" v-loading="loadingGifts" element-loading-text="拼命加载中">
         <div class="grid-content lottery-content-left-content" id="lottery-content-left-content">
             <div v-for="lotteryUser in lotteryUsers" :key="lotteryUser.cid" class="lottery-content-left-content-item">
-                <el-row v-if="lotteryUser.cid == lucknum" style="border:2px dashed red">
+                <el-row v-if="lotteryUser.cid == lucknum" style="border:2px dashed #13ce66">
                     <el-col :span="2">{{lotteryUser.cid}}</el-col>
                     <el-col :span="4">
                         <img src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1494331517247&di=da53acca7260e0770a6424779497126b&imgtype=0&src=http%3A%2F%2Fpic2.orsoon.com%2F2016%2F1215%2F20161215100547239.jpg">
@@ -22,7 +22,7 @@
             </div>
         </div>
     </el-col>
-    <el-col :span="10" class="lottery-content-right">
+    <el-col :span="9" class="lottery-content-right">
         <div class="block">
             <div class="lottery-content-result">
                 <transition name="bounce">

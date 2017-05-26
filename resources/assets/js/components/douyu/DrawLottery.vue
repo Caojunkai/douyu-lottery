@@ -1,9 +1,9 @@
 <template>
 <el-row class="lottery-content">
-    <el-col :span="7" :offset="4" class="lottery-content-left" v-loading="loadingGifts" element-loading-text="拼命加载中">
+    <el-col :span="8" :offset="4" class="lottery-content-left" v-loading="loadingGifts" element-loading-text="拼命加载中">
         <div class="grid-content lottery-content-left-content" id="lottery-content-left-content">
             <div v-for="lotteryUser in lotteryUsers" :key="lotteryUser.cid" class="lottery-content-left-content-item">
-                <el-row v-if="lotteryUser.cid === lucknum" style="border:2px dashed red">
+                <el-row v-if="lotteryUser.cid === lucknum" style="border:2px dashed #13ce66">
                     <el-col :span="2">{{lotteryUser.cid}}</el-col>
                     <el-col :span="4">
                         <img src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1494331517247&di=da53acca7260e0770a6424779497126b&imgtype=0&src=http%3A%2F%2Fpic2.orsoon.com%2F2016%2F1215%2F20161215100547239.jpg">
@@ -22,7 +22,7 @@
             </div>
         </div>
     </el-col>
-    <el-col :span="9" class="lottery-content-right" v-loading.fullscreen="loading" element-loading-text="拼命加载中">
+    <el-col :span="8" class="lottery-content-right" v-loading.fullscreen="loading" element-loading-text="拼命加载中">
         <div class="block">
             <div class="lottery-content-result">
                 <el-alert v-show="!clearResult" title="请先清理数据" type="warning">
@@ -33,11 +33,11 @@
             </div>
             <div class="lottery-content-right-button">
                 <el-row>
-                    <el-col :span="4" :offset="6">
+                    <el-col :span="5" :offset="5">
                         <el-button type="warning" :disabled="cleanDataBtn" size="large" @click="cleanData" class="lottery-content-right-button-left">去除无用数据
                         </el-button>
                     </el-col>
-                    <el-col :span="4" :offset="4">
+                    <el-col :span="5" :offset="3">
                         <el-button type="info" size="large" :disabled="drawLuckierBtn" @click="drawLuckier" class="lottery-content-right-button-right">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;开始抽奖&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                         </el-button>
                     </el-col>

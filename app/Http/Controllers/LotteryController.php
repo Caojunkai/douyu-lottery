@@ -73,7 +73,7 @@ class LotteryController extends Controller
         foreach ($gifts as $k => $v) {
             $vote_time_result +=  (int)date('mdHis', strtotime($v->vote_time));
         }
-        $luckNum =($vote_time_result % count($gifts) + 1) % count($gifts);
+        $luckNum = $vote_time_result % count($gifts);
         $luckier = $gifts[$luckNum];
         $luckier->vote_id = $vote_id;
         $luckier->lucknum = $luckNum;

@@ -1,6 +1,6 @@
 <template>
 <el-row class="lottery-content">
-    <el-col :span="6" :offset="4" class="lottery-content-left" v-loading="loadingGifts" element-loading-text="拼命加载中">
+    <el-col :span="7" :offset="4" class="lottery-content-left" v-loading="loadingGifts" element-loading-text="拼命加载中">
         <div class="grid-content lottery-content-left-content" id="lottery-content-left-content">
             <div v-for="lotteryUser in lotteryUsers" :key="lotteryUser.cid" class="lottery-content-left-content-item">
                 <el-row v-if="lotteryUser.cid === lucknum" style="border:2px dashed red">
@@ -8,21 +8,21 @@
                     <el-col :span="4">
                         <img src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1494331517247&di=da53acca7260e0770a6424779497126b&imgtype=0&src=http%3A%2F%2Fpic2.orsoon.com%2F2016%2F1215%2F20161215100547239.jpg">
                     </el-col>
-                    <el-col :span="6">{{ lotteryUser.douyu_name }}</el-col>
-                    <el-col :span="12">{{ lotteryUser.vote_time }}</el-col>
+                    <el-col :span="9">{{ lotteryUser.douyu_name | subName }}</el-col>
+                    <el-col :span="9">{{ lotteryUser.vote_time | subTime }}</el-col>
                 </el-row>
                 <el-row v-else>
                     <el-col :span="2">{{lotteryUser.cid}}</el-col>
                     <el-col :span="4">
                         <img src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1494331517247&di=da53acca7260e0770a6424779497126b&imgtype=0&src=http%3A%2F%2Fpic2.orsoon.com%2F2016%2F1215%2F20161215100547239.jpg">
                     </el-col>
-                    <el-col :span="6">{{ lotteryUser.douyu_name }}</el-col>
-                    <el-col :span="12">{{ lotteryUser.vote_time }}</el-col>
+                    <el-col :span="9">{{ lotteryUser.douyu_name | subName }}</el-col>
+                    <el-col :span="9">{{ lotteryUser.vote_time | subTime}}</el-col>
                 </el-row>
             </div>
         </div>
     </el-col>
-    <el-col :span="10" class="lottery-content-right" v-loading.fullscreen="loading" element-loading-text="拼命加载中">
+    <el-col :span="9" class="lottery-content-right" v-loading.fullscreen="loading" element-loading-text="拼命加载中">
         <div class="block">
             <div class="lottery-content-result">
                 <el-alert v-show="!clearResult" title="请先清理数据" type="warning">
@@ -174,6 +174,7 @@
 
 
 
+
 /*过渡效果
                     =============================================================
                     */
@@ -212,12 +213,14 @@
 
 
 
+
 /*=========================滑动===================================*/
 
  ::-webkit-scrollbar {
     width: 15px;
     background: rgba(54, 44, 81, .2);
 }
+
 
 
 
@@ -228,6 +231,7 @@
     border-radius: 10px;
     background-color: rgba(84, 74, 144, 1);
 }
+
 
 
 
@@ -263,70 +267,70 @@ export default {
             dialogTableVisible: false,
             DrawResultCurrentPage: 1,
             DrawResultTotal: 0,
-            lucknum:null
+            lucknum: null
         }
     },
     methods: {
         getGifts() {
             let _this = this;
             _this.loadingGifts = true
-            this.axios.get('/lotteries/' + _this.voteId, {
+            this.axios.get( '/lotteries/' + _this.voteId, {
                 params: {
                     page: _this.pageId
                 }
-            }).then(function(response) {
+            } ).then( function ( response ) {
                 let resp = response.data
-                if (resp.code) {
+                if ( resp.code ) {
                     let res = resp.msg
-                    _this.pageId = parseInt(res.current_page) + 1
-                    _this.lotteryUsers = _this.lotteryUsers.concat(res.data)
+                    _this.pageId = parseInt( res.current_page ) + 1
+                    _this.lotteryUsers = _this.lotteryUsers.concat( res.data )
                 } else {
-                    _this.$message.warning('没有数据了')
+                    _this.$message.warning( '没有数据了' )
                     _this.hasData = false
                 }
                 _this.loadingGifts = false
-            }).catch(function(response) {
+            } ).catch( function ( response ) {
                 _this.loadingGifts = false
-                _this.$message.warning('数据错误')
-            })
+                _this.$message.warning( '数据错误' )
+            } )
         },
         getMoreGifts() {
-            if (this.scrollContent.scrollTop + this.scrollContent.offsetHeight >= this.scrollContent.scrollHeight) {
-                if (this.hasData) {
-                    if (this.getDataKind) {
+            if ( this.scrollContent.scrollTop + this.scrollContent.offsetHeight >= this.scrollContent.scrollHeight ) {
+                if ( this.hasData ) {
+                    if ( this.getDataKind ) {
                         this.cleanData()
                     } else {
                         this.getGifts()
                     }
                 } else {
-                    this.$message.error('没有数据了')
+                    this.$message.error( '没有数据了' )
                 }
             }
         },
         cleanData() {
             let _this = this
-            if (!_this.getDataKind) {
+            if ( !_this.getDataKind ) {
                 _this.pageId = 1
                 _this.hasData = true
             }
-            if (_this.pageId > 1) {
+            if ( _this.pageId > 1 ) {
                 _this.loadingGifts = true
             } else {
                 _this.loading = true
             }
-            _this.axios.get('/lotteries/gifts/' + _this.voteId, {
+            _this.axios.get( '/lotteries/gifts/' + _this.voteId, {
                 params: {
                     page: _this.pageId
                 }
-            }).then(function(response) {
+            } ).then( function ( response ) {
                 let resp = response.data
-                if (resp.code) {
-                    if (_this.getLotteryUsersLen && !_this.getDataKind) {
+                if ( resp.code ) {
+                    if ( _this.getLotteryUsersLen && !_this.getDataKind ) {
                         _this.lotteryUsers = []
                     }
                     _this.getDataKind = 1
-                    _this.lotteryUsers = _this.lotteryUsers.concat(resp.msg)
-                    if (_this.pageId > 1) {
+                    _this.lotteryUsers = _this.lotteryUsers.concat( resp.msg )
+                    if ( _this.pageId > 1 ) {
                         _this.loadingGifts = false
                     } else {
                         _this.scrollContent.scrollTop = 0
@@ -337,41 +341,41 @@ export default {
                     _this.pageId++
                         _this.cleanDataBtn = true
                 } else {
-                    _this.$message.warning('没有数据了')
+                    _this.$message.warning( '没有数据了' )
                     _this.hasData = false
                     _this.loading = false
                     _this.loadingGifts = false
                 }
-            }).catch(function(response) {
-                _this.$message.error('没有数据了')
+            } ).catch( function ( response ) {
+                _this.$message.error( '没有数据了' )
                 _this.loading = false
                 _this.loadingGifts = false
-            })
+            } )
         },
         drawLuckier() {
             let _this = this
-            if (_this.clearResult) {
+            if ( _this.clearResult ) {
                 _this.loading = true
-                _this.axios.post('/lottery/draw', {
+                _this.axios.post( '/lottery/draw', {
                     lottery_vote_id: _this.voteId
-                }).then(function(response) {
+                } ).then( function ( response ) {
                     let res = response.data
-                    if (res.code) {
+                    if ( res.code ) {
                         //TODO 中奖用户
-                        _this.axios.get('/lotteries/gifts/' + _this.voteId, {
+                        _this.axios.get( '/lotteries/gifts/' + _this.voteId, {
                             params: {
-                                page: Math.ceil(parseInt(res.msg.lucknum) / 1000)
+                                page: Math.ceil( parseInt( res.msg.lucknum ) / 1000 )
                             }
-                        }).then(function(response) {
+                        } ).then( function ( response ) {
                             let resp = response.data
-                            if (resp.code) {
+                            if ( resp.code ) {
                                 _this.lucknum = res.msg.lucknum
                                 _this.lotteryUsers = resp.msg
                                 _this.hasData = false
-                                _this.scrollContent.scrollTop = _this.scrollContent.scrollHeight*((res.msg.lucknum%1000)/1000 - 0.006)
+                                _this.scrollContent.scrollTop = _this.scrollContent.scrollHeight * ( ( res.msg.lucknum % 1000 ) / 1000 - 0.006 )
                             }
-                        })
-                        _this.lotteryResult = '<h1>计算结果：<span style="color:red;">'+ res.msg.lucknum +'</span></h1><h1>恭喜<span style="color:red;">' + res.msg.douyu_name + '</span>获奖</h1>'
+                        } )
+                        _this.lotteryResult = '<h1>计算结果：<span style="color:red;">' + res.msg.lucknum + '</span></h1><h1>恭喜<span style="color:red;">' + res.msg.douyu_name + '</span>获奖</h1>'
                         _this.luckier = res.msg.douyu_name
                         // _this.$alert('获奖用户为:' + _this.luckier, '抽奖完成', {
                         //     confirmButtonText: '确定'
@@ -379,41 +383,41 @@ export default {
                         _this.loading = false
                         _this.drawLuckierBtn = true
                     } else {
-                        _this.$message.error('抽奖失败，请重试')
+                        _this.$message.error( '抽奖失败，请重试' )
                         _this.loading = false
                     }
-                }).catch(function(response) {
-                    _this.$message.error('数据错误')
+                } ).catch( function ( response ) {
+                    _this.$message.error( '数据错误' )
                     _this.loading = false
-                })
+                } )
             } else {
-                _this.$message.error('请先清理数据')
+                _this.$message.error( '请先清理数据' )
             }
         },
         getLotteryResult() {
             let _this = this
             _this.dialogTableVisible = true
-            this.axios.get('/lotteries/lucky/all').then(function(response) {
+            this.axios.get( '/lotteries/lucky/all' ).then( function ( response ) {
                 let res = response.data
-                if (res.code) {
+                if ( res.code ) {
                     _this.DrawResultData = res.msg.data
                     _this.DrawResultTotal = res.msg.total
                 }
-            })
+            } )
             //TODO
         },
-        DrawResultCurrentChange(val) {
+        DrawResultCurrentChange( val ) {
             let _this = this
-            _this.axios.get('/lotteries/lucky/all', {
+            _this.axios.get( '/lotteries/lucky/all', {
                 params: {
                     page: val
                 }
-            }).then(function(response) {
+            } ).then( function ( response ) {
                 let res = response.data
-                if (res.code) {
+                if ( res.code ) {
                     _this.DrawResultData = res.msg.data
                 }
-            })
+            } )
         }
     },
     props: [
@@ -421,13 +425,21 @@ export default {
     ],
     computed: {
         getLotteryUsersLen() {
-            return (this.lotteryUsers.length > 0)
+            return ( this.lotteryUsers.length > 0 )
+        }
+    },
+    filters: {
+        subName( val ) {
+            return val.slice(0,8)
+        },
+        subTime(val){
+            return val.slice(5,)
         }
     },
     mounted() {
-        this.scrollContent = document.getElementById('lottery-content-left-content')
-        this.getGifts(1)
-        this.scrollContent.addEventListener('scroll', this.getMoreGifts);
+        this.scrollContent = document.getElementById( 'lottery-content-left-content' )
+        this.getGifts( 1 )
+        this.scrollContent.addEventListener( 'scroll', this.getMoreGifts );
     }
 }
 </script>

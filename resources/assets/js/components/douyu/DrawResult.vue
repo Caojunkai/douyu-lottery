@@ -8,16 +8,16 @@
                     <el-col :span="4">
                         <img src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1494331517247&di=da53acca7260e0770a6424779497126b&imgtype=0&src=http%3A%2F%2Fpic2.orsoon.com%2F2016%2F1215%2F20161215100547239.jpg">
                     </el-col>
-                    <el-col :span="6">{{ lotteryUser.douyu_name }}</el-col>
-                    <el-col :span="12">{{ lotteryUser.vote_time }}</el-col>
+                    <el-col :span="6">{{ lotteryUser.douyu_name | subName }}</el-col>
+                    <el-col :span="12">{{ lotteryUser.vote_time | subTime }}</el-col>
                 </el-row>
                 <el-row v-else>
                     <el-col :span="2">{{lotteryUser.cid}}</el-col>
                     <el-col :span="4">
                         <img src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1494331517247&di=da53acca7260e0770a6424779497126b&imgtype=0&src=http%3A%2F%2Fpic2.orsoon.com%2F2016%2F1215%2F20161215100547239.jpg">
                     </el-col>
-                    <el-col :span="6">{{ lotteryUser.douyu_name }}</el-col>
-                    <el-col :span="12">{{ lotteryUser.vote_time }}</el-col>
+                    <el-col :span="6">{{ lotteryUser.douyu_name | subName }}</el-col>
+                    <el-col :span="12">{{ lotteryUser.vote_time | subTime }}</el-col>
                 </el-row>
             </div>
         </div>
@@ -215,6 +215,14 @@ export default {
         "voteId",
         "lucknum"
     ],
+    filters: {
+        subName( val ) {
+            return val.slice(0,6)
+        },
+        subTime(val){
+            return val.slice(5,)
+        }
+    },
     mounted() {
         this.scrollContent = document.getElementById('lottery-content-left-content')
         this.cleanData()
